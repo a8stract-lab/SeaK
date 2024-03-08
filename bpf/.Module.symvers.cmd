@@ -1,0 +1,1 @@
+cmd_/usr/src/linux-5.15.106/samples/bpf/Module.symvers := sed 's/\.ko$$/\.o/' /usr/src/linux-5.15.106/samples/bpf/modules.order | scripts/mod/modpost -m -a  -o /usr/src/linux-5.15.106/samples/bpf/Module.symvers -e -i Module.symvers   -T -
