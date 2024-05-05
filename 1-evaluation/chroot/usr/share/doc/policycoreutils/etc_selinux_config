@@ -1,0 +1,43 @@
+############################ -*- Mode: Conf-Unix -*- ##########################
+## /etc/selinux/config --- 
+## Author           : Manoj Srivastava ( srivasta@glaurung.internal.golden-gryphon.com ) 
+## Created On       : Thu Sep  7 11:44:37 2006
+## Created On Node  : glaurung.internal.golden-gryphon.com
+## Last Modified By : Manoj Srivastava
+## Last Modified On : Thu Sep  7 11:46:13 2006
+## Last Machine Used: glaurung.internal.golden-gryphon.com
+## Update Count     : 2
+## Status           : Unknown, Use with caution!
+## HISTORY          : 
+## Description      : 
+## arch-tag: f71986d8-df29-4704-b560-45bd60e7928c
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+##
+###############################################################################
+
+# This file (/etc/selinux/config) controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+# enforcing - SELinux security policy is enforced.
+# permissive - SELinux prints warnings instead of enforcing.
+# disabled - No SELinux policy is loaded.
+SELINUX=permissive
+# SELINUXTYPE= can take one of these two values:
+# default - Equivalent to the old "targeted" and "strict" policies
+# mls     - Multi-Level Security, for military and educational use
+# src     - Custom policy built from source
+SELINUXTYPE=default
+
+# SETLOCALDEFS= Check local definition changes
+SETLOCALDEFS=0

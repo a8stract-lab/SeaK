@@ -1,0 +1,17 @@
+/.
+/etc
+/etc/apt
+/etc/apt/trusted.gpg.d
+/etc/apt/trusted.gpg.d/debian-ports-archive-2023.gpg
+/etc/apt/trusted.gpg.d/debian-ports-archive-2024.gpg
+/etc/apt/trusted.gpg.d/debian-ports-archive-2025.gpg
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/debian-ports-archive-keyring
+/usr/share/doc/debian-ports-archive-keyring/README
+/usr/share/doc/debian-ports-archive-keyring/changelog.gz
+/usr/share/doc/debian-ports-archive-keyring/copyright
+/usr/share/keyrings
+/usr/share/keyrings/debian-ports-archive-keyring-removed.gpg
+/usr/share/keyrings/debian-ports-archive-keyring.gpg

@@ -1,0 +1,2 @@
+libbfd 2.35.2-system libbinutils (>= 2.35.2), libbinutils (<< 2.35.3)
+libopcodes 2.35.2-system libbinutils (>= 2.35.2), libbinutils (<< 2.35.3)
