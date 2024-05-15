@@ -1,2 +1,5 @@
 ./1-evaluation/bullseye.i*
 ./1-evaluation/chroot/*
+1-evaluation/bullseye.id_rsa
+1-evaluation/bullseye.id_rsa.pub
+1-evaluation/bullseye.img
