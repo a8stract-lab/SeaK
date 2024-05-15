@@ -1,9 +1,0 @@
-39d2d0bc0cf9446faef7be5c4b674e2f  usr/bin/strace
-6b8a0228a135d14ce05d8e605a91ee8d  usr/bin/strace-log-merge
-ea41b5b6ef8a87ac2fd0da0f0873fefd  usr/share/doc/strace/NEWS.gz
-9d00ee3bb2e6d23a367b8ef062c7cc1f  usr/share/doc/strace/changelog.Debian.gz
-26960d11d11edcf74535567044615c5e  usr/share/doc/strace/changelog.gz
-a6ffd0ef3aa679aa14c9fed292c77bd6  usr/share/doc/strace/copyright
-d01f53bbc575a1f82c0b3e1b1d5428b1  usr/share/doc/strace/examples/strace-graph.gz
-657bde270517f9f425ed20ed92061e89  usr/share/man/man1/strace-log-merge.1.gz
-cabb8d94bcab848fa8ea14045d835b6a  usr/share/man/man1/strace.1.gz

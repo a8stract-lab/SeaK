@@ -1,3 +1,0 @@
-  * stop lld break+Replace llvm
-    when 0.51+nmu1 with broken symlink has gone from all Debian suites
-    (see release 0.51+nmu2)

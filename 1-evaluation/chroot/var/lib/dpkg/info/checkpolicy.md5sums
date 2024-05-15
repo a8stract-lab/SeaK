@@ -1,8 +1,0 @@
-f9266b60227f9b02a8db12c5066f4eb3  usr/bin/checkmodule
-6a3aae20e52d1783d014b31b403aef4a  usr/bin/checkpolicy
-536f9082e7f79bd367c9ab8e0b221065  usr/share/doc/checkpolicy/changelog.Debian.gz
-88ba7d9222dc2d9b26d9b1ea9a97e1a6  usr/share/doc/checkpolicy/copyright
-4e535eddacf23d11a9d5d53246141b5f  usr/share/man/man8/checkmodule.8.gz
-8a83f234c8d0331948cf7a6c1badf72b  usr/share/man/man8/checkpolicy.8.gz
-e06cf3be669265f66b24f399707664fa  usr/share/man/ru/man8/checkmodule.8.gz
-b547b37839f0b0e52c234ebbaf247f09  usr/share/man/ru/man8/checkpolicy.8.gz
