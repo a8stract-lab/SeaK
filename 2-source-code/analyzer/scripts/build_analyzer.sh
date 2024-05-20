@@ -1,5 +1,5 @@
 #!/bin/bash
 
-pushd /home/hotbpf/hot_bpf_analyzer
+pushd /home/hotbpf/analyzer/
 make
 popd

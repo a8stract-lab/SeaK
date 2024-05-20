@@ -16,7 +16,7 @@ if [ ! -d $BUILD_DIR/llvm-project ]; then
 fi
 
 pushd llvm-project
-cp -r /home/hotbpf/hot_bpf_analyzer/patch/llvm .
+cp -r /home/hotbpf/analyzer/patch/llvm .
 
 mkdir build && cd build
 cmake -GNinja \
