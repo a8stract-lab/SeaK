@@ -1,4 +1,7 @@
-KERNEL=./kernels/bzImage-vanilla
+#!/bin/bash
+
+# KERNEL=./kernels/bzImage-vanilla
+KERNEL=/home/ppw/Documents/ebpf-detector/SeaK/2-source-code/linux-5.15.106/arch/x86_64/boot/bzImage
 IMAGE=./bullseye.img
 qemu-system-x86_64 \
     -m 2G \
