@@ -1,0 +1,4 @@
+test-libtraceevent.c:2:10: fatal error: traceevent/trace-seq.h: No such file or directory
+    2 | #include <traceevent/trace-seq.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.

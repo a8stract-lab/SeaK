@@ -1,0 +1,4 @@
+test-libdebuginfod.c:2:10: fatal error: elfutils/debuginfod.h: No such file or directory
+    2 | #include <elfutils/debuginfod.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.

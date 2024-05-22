@@ -1,0 +1,4 @@
+test-libcap.c:2:10: fatal error: sys/capability.h: No such file or directory
+    2 | #include <sys/capability.h>
+      |          ^~~~~~~~~~~~~~~~~~
+compilation terminated.

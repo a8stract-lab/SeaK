@@ -1,0 +1,8 @@
+test-disassembler-init-styled.c: In function ‘main’:
+test-disassembler-init-styled.c:9:9: error: too many arguments to function ‘init_disassemble_info’
+    9 |         init_disassemble_info(&info, stdout,
+      |         ^~~~~~~~~~~~~~~~~~~~~
+In file included from test-disassembler-init-styled.c:3:
+/usr/include/dis-asm.h:396:13: note: declared here
+  396 | extern void init_disassemble_info (struct disassemble_info *dinfo, void *stream,
+      |             ^~~~~~~~~~~~~~~~~~~~~

@@ -1,0 +1,2 @@
+/usr/bin/ld: cannot find -lperl: No such file or directory
+collect2: error: ld returned 1 exit status
