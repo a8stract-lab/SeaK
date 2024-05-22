@@ -1,1 +1,0 @@
-selinux-policy-default: non-standard-dir-perm var/lib/selinux/default/ 0700 != 0755

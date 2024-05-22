@@ -1,3 +1,0 @@
-package llvm-11-runtime
-interpreter /usr/bin/lli-11
-magic BC
