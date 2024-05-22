@@ -1,0 +1,12 @@
+README for the debian-ports-archive-keyring package
+===================================================
+
+The debian-ports archive digitally signs its Release files that are
+stored on the debian-ports.org ftp-server and its mirrors with the
+keys contained in this package.
+
+Each active key is provided in a separate keyring in /etc/apt/trusted.gpg.d/
+as conffiles.
+
+More information about the archive authentication feature can be found
+here: http://wiki.debian.org/SecureApt

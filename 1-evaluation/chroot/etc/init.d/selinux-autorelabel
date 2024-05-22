@@ -1,0 +1,103 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          selinux-autorelabel
+# Required-Start:    $remote_fs
+# Required-Stop:
+# Default-Start:     S
+# Default-Stop:
+# X-Interactive:     true
+# Short-Description: Relabel the needed filesystems
+# Description:       Relabel /dev and /run to mimic systemd behaviour.
+#                    Also Relabel all filesystems, if necessary.
+### END INIT INFO
+
+# Author: Laurent Bigonville <bigon@debian.org>
+# Based on Red Hat and Erich Schubert work
+
+. /lib/lsb/init-functions
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+[ -x /sbin/fixfiles ] || exit 0
+
+selinuxenabled=
+if [ -n "/sys/fs/selinux" -a "`cat /proc/self/attr/current 2>/dev/null`" ]; then
+    if [ -r /sys/fs/selinux/enforce ]; then
+	selinuxenabled=`cat /sys/fs/selinux/enforce 2>/dev/null`
+    else
+	# we can't read /selinux/enforce, so we assume it's enforced...
+	selinuxenabled=1
+    fi
+fi
+
+relabel_selinux_full() {
+    # if /sbin/init is not labeled correctly this process is running in the
+    # wrong context, so a reboot will be required after relabel
+    AUTORELABEL=
+    [ -f /etc/selinux/config ] && . /etc/selinux/config
+    echo "0" > /sys/fs/selinux/enforce
+    if [ -x /bin/plymouth ] && plymouth --ping; then
+	plymouth --hide-splash
+    fi
+
+    if [ "$AUTORELABEL" = "0" ]; then
+	echo
+	echo "*** Warning -- SELinux ${SELINUXTYPE} policy relabel is required."
+	echo "*** /etc/selinux/config indicates you want to manually fix labeling"
+	echo "*** problems. Dropping you to a shell; the system will reboot"
+	echo "*** when you leave the shell."
+	sulogin $CONSOLE
+
+    else
+	echo
+	echo "*** Warning -- SELinux ${SELINUXTYPE} policy relabel is required."
+	echo "*** Relabeling could take a very long time, depending on file"
+	echo "*** system size and speed of hard drives."
+
+	FORCE=`cat /.autorelabel`
+	/sbin/fixfiles $FORCE restore
+    fi
+    rm -f  /.autorelabel
+    invoke-rc.d sendsigs stop > /dev/null 2>&1
+    sync
+    umount -a
+    mount -n -o remount,ro /
+    reboot -f
+}
+
+relabel_selinux_minimal() {
+    restorecon -R /dev /run /sys/class/net 2>/dev/null
+    restorecon /sys/devices/system/cpu/online 2>/dev/null
+}
+
+selinux_relabel() {
+    if [ -n "$selinuxenabled" ]; then
+	if [ -f /.autorelabel ] || grep -q '\<autorelabel\>' /proc/cmdline ; then
+	    restorecon $(awk '!/^#/ && $4 !~ /noauto/ && $2 ~ /^\// { print $2 }' /etc/fstab) >/dev/null 2>&1
+	    relabel_selinux_full
+	else
+	    relabel_selinux_minimal
+	fi
+    else
+	# If SELinux is installed but not enabled, set the autorelabel flag for
+	# the next boot...
+	if [ -e /etc/selinux -a ! -f /.autorelabel ]; then
+	    touch /.autorelabel
+	fi
+    fi
+}
+
+case "$1" in
+    start|restart|force-reload)
+	selinux_relabel
+    ;;
+    stop)
+	# No-op
+    ;;
+    *)
+	echo "Usage: selinux-autorelabel {start|stop|restart|force-reload}" >&2
+	exit 3
+    ;;
+esac
+
+exit 0

@@ -1,0 +1,13 @@
+It would be useful for most users to be familiar with policycoreutils
+tools in order to manipulate policies installed on the
+system. Specifically, it is useful to be familiar with:
+ semodule(8)    - Manage SELinux policy modules.
+
+By default, most modules are enabled after installing the selinux
+policy packages, only some modules which are normally not used on debian
+systems (for example other distribution's package managers) are disabled.
+If you want to get rid of certain modules (for example to get a least
+privilege system), you can disable them using "semodule -d", which will
+be preserved during policy package upgrades. In contrast, if you remove
+modules via "semodule -r", they will be re-added when the policy package
+is upgraded.

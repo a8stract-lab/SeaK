@@ -1,0 +1,3 @@
+/etc/apt/trusted.gpg.d/debian-ports-archive-2023.gpg
+/etc/apt/trusted.gpg.d/debian-ports-archive-2024.gpg
+/etc/apt/trusted.gpg.d/debian-ports-archive-2025.gpg

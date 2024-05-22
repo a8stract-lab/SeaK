@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# Do automatic relabelling
+#
+
+relabel_selinux() {
+    # if /sbin/init is not labeled correctly this process is running in the
+    # wrong context, so a reboot will be required after relabel
+    AUTORELABEL=
+    . /etc/selinux/config
+    echo "0" > /sys/fs/selinux/enforce
+    if [ -x /bin/plymouth ] && plymouth --ping; then
+	plymouth --hide-splash
+    fi
+
+    if [ "$AUTORELABEL" = "0" ]; then
+	echo
+	echo "*** Warning -- SELinux ${SELINUXTYPE} policy relabel is required. "
+	echo "*** /etc/selinux/config indicates you want to manually fix labeling"
+	echo "*** problems. Dropping you to a shell; the system will reboot"
+	echo "*** when you leave the shell."
+	sulogin
+
+    else
+	echo
+	echo "*** Warning -- SELinux ${SELINUXTYPE} policy relabel is required."
+	echo "*** Relabeling could take a very long time, depending on file"
+	echo "*** system size and speed of hard drives."
+
+	FORCE=$(cat /.autorelabel)
+	[ -x "/sbin/quotaoff" ] && /sbin/quotaoff -aug
+	/sbin/fixfiles $FORCE restore
+    fi
+    rm -f  /.autorelabel
+    [ -x /usr/lib/dracut/dracut-initramfs-restore ] && /usr/lib/dracut/dracut-initramfs-restore
+    systemctl --force reboot
+}
+
+# Check to see if a full relabel is needed
+if [ "$READONLY" != "yes" ]; then
+    restorecon $(awk '!/^#/ && $4 !~ /noauto/ && $2 ~ /^\// { print $2 }' /etc/fstab) >/dev/null 2>&1
+    relabel_selinux
+fi

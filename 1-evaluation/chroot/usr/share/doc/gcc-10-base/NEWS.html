@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+
+   <head>
+ 
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>
+GCC 10 Release Series &mdash; Changes, New Features, and Fixes
+- GNU Project - Free Software Foundation (FSF)</title>
+<link rel="stylesheet" type="text/css" href="gcc.css" />
+   </head>
+ 
+
+<!-- GCC maintainers, please do not hesitate to contribute/update
+     entries concerning those part of GCC you maintain!
+-->
+
+<body>
+
+
+
+<h1>GCC 10 Release Series<br/>Changes, New Features, and Fixes</h1>
+
+<p>
+This page is a "brief" summary of some of the huge number of improvements
+in GCC 10.
+
+You may also want to check out our
+<a href="porting_to.html">Porting to GCC 10</a> page and the
+<a href="../onlinedocs/index.html#current">full GCC documentation</a>.
+
+</p>
+
+<!-- .................................................................. -->
+<h2>Caveats</h2>
+<ul>
+  <li>
+    An ABI incompatibility between C++14 and C++17 has been fixed.  On some
+    targets a class with a zero-sized subobject would be passed incorrectly
+    when compiled as C++17 or C++20.
+    See the <a href="#empty_base">C++ notes below</a> for more details.
+  </li>
+  <li>
+    The deprecated Profile Mode and <code>array_allocator</code> extensions
+    have been removed from libstdc++.
+  </li>
+  <li>
+    The non-standard <code>std::__is_nullptr_t</code> type trait is deprecated
+    and will be removed from libstdc++ in a future release.
+    The standard trait <code>std::is_null_pointer</code> should be instead.
+  </li>
+  <li>
+    The minimum version of the <a href="https://www.mpfr.org">MPFR</a>
+    library required for building GCC has been increased to version
+    3.1.0 (released 2011-10-03).
+  </li>
+  <li>
+    The automatic template instantiation at link time (<code>-frepo</code>)
+    has been removed.
+  </li>
+  <li>
+    The <code>--param allow-store-data-races</code> internal parameter has
+    been removed in favor of a new official option
+    <code>-fallow-store-data-races</code>.  While default behavior is
+    unchanged and the new option allows to correctly maintain a per
+    compilation unit setting across link-time optimization, alteration
+    of the default via <code>--param allow-store-data-races</code> will
+    now be diagnosed and build systems have to be adjusted accordingly.
+  </li>
+  <li>
+    Offloading to Heterogeneous System Architecture Intermediate
+    Language (HSAIL) has been deprecated and will likely be removed in
+    a future release.
+  </li>
+</ul>
+
+
+<!-- .................................................................. -->
+<h2 id="general">General Improvements</h2>
+<ul>
+  <li>New built-in functions:
+    <ul>
+      <li>The
+	<a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/cpp/_005f_005fhas_005fbuiltin.html#g_t_005f_005fhas_005fbuiltin"><code>__has_builtin</code></a>
+	built-in preprocessor operator can be used to query support
+	for built-in functions provided by GCC and other compilers
+	that support it.
+      </li>
+      <li><code>__builtin_roundeven</code> for the corresponding function from
+	ISO/IEC TS 18661.
+      </li>
+    </ul>
+  </li>
+  <li>
+    New command-line options:
+    <ul>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Optimize-Options.html#index-fno-allocation-dce"><code>-fallocation-dce</code></a>
+	removes unneeded pairs of <code>new</code> and <code>delete</code>
+	operators.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Optimize-Options.html#index-fprofile-partial-training"><code>-fprofile-partial-training</code></a>
+	  can now be used to inform the compiler that code paths not covered by the
+	  training run should not be optimized for size.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Optimize-Options.html#index-fprofile-reproducible"><code>-fprofile-reproducible</code></a>
+	  controls level of reproducibility of profile gathered by
+	  <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Optimize-Options.html#index-fprofile-generate"><code>-fprofile-generate</code></a>.
+	  This makes it possible to rebuild program
+	  with same outcome which is useful, for example, for distribution packages.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Optimize-Options.html#index-fprofile-prefix-path"><code>-fprofile-prefix-path</code></a>
+	  can be used in combination with <code>-fprofile-generate=profile_dir</code> and
+	  <code>-fprofile-use=profile_dir</code> to inform GCC where the base
+	  directory of build source tree is in case it differs between instrumentation
+	  and optimized builds.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Static-Analyzer-Options.html">-fanalyzer</a>
+	enables a new static analysis pass and associated warnings.
+	This pass performs a time-consuming exploration of paths through
+	the code in the hope of detecting various common errors, such as
+	double-free bugs.  This option should be regarded as
+	<b>experimental</b> in this release.  In particular, analysis of non-C
+	code is unlikely to work.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Inter-procedural optimization improvements:
+    <ul>
+      <li>The inter-procedural scalar replacement of aggregates (IPA-SRA) pass
+	  was re-implemented to work at link-time and can now also remove
+	  computing and returning unused return values.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Optimize-Options.html#index-finline-functions"><code>-finline-functions</code></a>
+	  is now enabled at <code>-O2</code> and was retuned for better code
+	  size versus runtime performance trade-offs.  Inliner heuristics was
+	  also significantly sped up to avoid negative impact to <code>-flto
+	  -O2</code> compile times.
+      </li>
+      <li>Inliner heuristics and function cloning can now use value-range
+	  information to predict effectivity of individual transformations.
+      </li>
+      <li>During link-time optimization the C++ One Definition Rule is used to
+	  increase precision of type based alias analysis.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Link-time optimization improvements:
+    <ul>
+      <li>
+        A new binary <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/lto-dump.html"><code>lto-dump</code></a>
+        has been added.  The program can dump various
+        information about a LTO bytecode object file.
+      </li>
+      <li>
+	Parallel phase of the LTO can automatically detect a running make's
+	jobserver or can fall back to number of available cores.
+      </li>
+      <li>
+        The LTO bytecode can be compressed with
+        <a href="https://facebook.github.io/zstd/"><code>zstd</code></a>
+        algorithm.  Configure script can automatically detect the <code>zstd</code> support.
+      </li>
+      <li>Most <code>--param</code> values can now be specified at
+	  translation unit granularity. This includes all parameters controlling
+	  the inliner and other inter-procedural optimizations.  Unlike earlier
+	  releases, GCC 10 will ignore parameters controlling optimizations
+	  specified at link-time and apply parameters specified at compile-time
+	  in the same manner as done for optimization flags.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Profile driven optimization improvements:
+    <ul>
+      <li>Profile maintenance during compilation and hot/cold code
+	  partitioning have been improved.
+      </li>
+      <li>
+        Using <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Optimize-Options.html#index-fprofile-values"><code>-fprofile-values</code></a>,
+        an instrumented binary can track multiple
+	values (up to 4) for e.g. indirect calls and provide more precise
+	profile information.
+      </li>
+    </ul>
+  </li>
+</ul>
+<!-- .................................................................. -->
+<h2 id="languages">New Languages and Language-Specific Improvements</h2>
+
+<ul>
+  <li>
+    Version 2.6 of the <a href="https://www.openacc.org/">OpenACC</a>
+    specification is now supported in the C, C++ and Fortran compilers.
+    See the <a href="https://gcc.gnu.org/wiki/OpenACC#status-10">implementation
+    status</a> section on the OpenACC wiki page and the
+    <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/libgomp/#toc-Enabling-OpenACC-1">
+    run-time library documentation</a> for further information.
+  </li>
+  <li>GCC 10 adds a number of newly implemented
+      <a href="https://www.openmp.org/specifications/">OpenMP 5.0</a>
+      features on top of the GCC 9 release such as <code>conditional</code>
+      <code>lastprivate</code> clause, <code>scan</code> and <code>loop</code>
+      directives, <code>order(concurrent)</code> and
+      <code>use_device_addr</code> clauses support, <code>if</code>
+      clause on <code>simd</code> construct or partial support for
+      the <code>declare&nbsp;variant</code> directive, getting closer to
+      full support of the OpenMP 5.0 standard.
+  </li>
+  <li>
+    OpenMP and OpenACC now support
+    <a href="https://gcc.gnu.org/wiki/Offloading">offloading</a> to AMD Radeon
+    (GCN) GPUs; supported are the third-generation Fiji (<code>fiji</code>)
+    and the fifth-generation VEGA 10/VEGA 20 (<code>gfx900</code> or
+    <code>gfx906</code>).
+  </li>
+</ul>
+
+<!-- <h3 id="ada">Ada</h3> -->
+
+<!-- <h3 id="brig">BRIG (HSAIL)</h3> -->
+
+<h3 id="c-family">C family</h3>
+<ul>
+  <li>New attributes:
+    <ul>
+     <li>
+       The <code>access</code> function and type attribute has been added
+       to describe how a function accesses objects passed to it by pointer
+       or reference, and to associate such arguments with integer arguments
+       denoting the objects' sizes.  The attribute is used to enable
+       the detection of invalid accesses by user-defined functions, such
+       as those diagnosed by <code>-Wstringop-overflow</code>.
+     </li>
+     <li>
+       The <code>symver</code> attribute can be used to bind symbols to
+       specific version nodes on ELF platforms. This is preferred to using
+       inline assembly with GNU as <code>symver</code> directive because the
+       latter is not compatible with link-time optimizations.
+     </li>
+    </ul>
+  </li>
+  <li>New warnings:
+    <ul>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Warning-Options.html#index-Wstring-compare"><code>-Wstring-compare</code></a>, enabled
+	by <code>-Wextra</code>, warns about equality and inequality
+	expressions between zero and the result of a call to either
+	<code>strcmp</code> and <code>strncmp</code> that evaluate to
+	a constant as a result of the length of one argument being greater
+	than the size of the array pointed to by the other.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Warning-Options.html#index-Wzero-length-bounds"><code>-Wzero-length-bounds</code></a>,
+	enabled by <code>-Warray-bounds</code>, warns about accesses to
+	elements of zero-length arrays that might overlap other members
+	of the same object.
+      </li>
+    </ul>
+  </li>
+  <li>Enhancements to existing warnings:
+    <ul>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Warning-Options.html#index-Warray-bounds"><code>-Warray-bounds</code></a>
+	detects more out-of-bounds accesses to member arrays as well as
+	accesses to elements of zero-length arrays.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Warning-Options.html#index-Wformat-overflow"><code>-Wformat-overflow</code></a>
+	makes full use of string length information computed by
+	the <code>strlen</code> optimization pass.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Warning-Options.html#index-Wrestrict"><code>-Wrestrict</code></a>
+	detects overlapping accesses to dynamically allocated objects.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Warning-Options.html#index-Wreturn-local-addr"><code>-Wreturn-local-addr</code></a>
+	diagnoses more instances of <code>return</code> statements returning
+	addresses of automatic variables.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Warning-Options.html#index-Wstringop-overflow"><code>-Wstringop-overflow</code></a>
+	detects more out-of-bounds stores to member arrays including
+	zero-length arrays, dynamically allocated objects and variable length
+	arrays, as well as more instances of reads of unterminated character
+	arrays by string built-in functions.  The warning also detects
+	out-of-bounds accesses by calls to user-defined functions declared
+	with the new attribute <code>access</code>.
+      </li>
+    </ul>
+  </li>
+  <li>Extended characters in identifiers may now be specified directly in
+  the input encoding (UTF-8, by default), in addition to the UCN syntax
+  (<code>\uNNNN</code> or <code>\UNNNNNNNN</code>) that is already
+  supported:
+  <blockquote><pre>
+static const int π = 3;
+int get_naïve_pi() {
+  return π;
+}</pre></blockquote></li>
+</ul>
+
+<h3 id="c">C</h3>
+<ul>
+  <li>Several new features from the upcoming C2X revision of the ISO C
+  standard are supported with <code>-std=c2x</code>
+  and <code>-std=gnu2x</code>.  Some of these features are also
+  supported as extensions when compiling for older language versions.
+  In addition to the features listed, some features previously
+  supported as extensions and now added to the C standard are enabled
+  by default in C2X mode and not diagnosed with <code>-std=c2x
+  -Wpedantic</code>.
+  <ul>
+    <li>The <code>[[]]</code> attribute syntax is supported, as in
+    C++.  Existing attributes can be used with this syntax in forms
+    such as <code>[[gnu::const]]</code>.  The standard
+    attributes <code>[[deprecated]]</code>, <code>[[fallthrough]]</code>
+    and <code>[[maybe_unused]]</code> are supported.</li>
+    <li>UTF-8 character constants using the <code>u8''</code> syntax
+    are supported.</li>
+    <li><code>&lt;float.h&gt;</code> defines
+    macros <code>FLT_NORM_MAX</code>, <code>DBL_NORM_MAX</code>
+    and <code>LDBL_NORM_MAX</code>.</li>
+    <li>When decimal floating-point arithmetic is
+    supported, <code>&lt;float.h&gt;</code> defines
+    macros <code>DEC32_TRUE_MIN</code>, <code>DEC64_TRUE_MIN</code>
+    and <code>DEC128_TRUE_MIN</code>, in addition to the macros that
+    were previously only defined if <code>__STDC_WANT_DEC_FP__</code>
+    was defined before including <code>&lt;float.h&gt;</code>.</li>
+    <li>In C2X mode, empty parentheses in a function definition give
+    that function a type with a prototype for subsequent calls; other
+    old-style function definitions are diagnosed by default in C2X
+    mode.</li>
+    <li>The <code>strftime</code> format checking supports
+    the <code>%OB</code> and <code>%Ob</code> formats.</li>
+    <li>In C2X mode, <code>-fno-fp-int-builtin-inexact</code> is
+    enabled by default.</li>
+  </ul></li>
+
+  <li>GCC now defaults to <code>-fno-common</code>.  As a result, global
+      variable accesses are more efficient on various targets.  In C, global
+      variables with multiple tentative definitions now result in linker errors.
+      With <code>-fcommon</code> such definitions are silently merged during
+      linking.
+  </li>
+</ul>
+
+<h3 id="cxx">C++</h3>
+<ul>
+  <li>Several C++20 features have been implemented:
+  <ul>
+    <li>P1668R1, Permitting Unevaluated inline-assembly in constexpr Functions</li>
+    <li>P1161R3, Deprecate <code>a[b,c]</code></li>
+    <li>P0848R3, Conditionally Trivial Special Member Functions</li>
+    <li>P1091R3, Extending structured bindings</li>
+    <li>P1143R2, Adding the <code>constinit</code> keyword</li>
+    <li>P1152R4, Deprecating <code>volatile</code></li>
+    <li>P0388R4, Permit conversions to arrays of unknown bound</li>
+    <li>P0784R7, <code>constexpr new</code></li>
+    <li>Concepts, including P0734R0, P0857R0, P1084R2, P1141R2, P0848R3, P1616R1, P1452R2</li>
+    <li>P1301R4, <code>[[nodiscard("with reason")]]</code></li>
+    <li>P1814R0, class template argument deduction for alias templates</li>
+    <li>P1816R0, class template argument deduction for aggregates</li>
+    <li>P0960R3, Parenthesized initialization of aggregates</li>
+    <li>P1331R2, Allow trivial default initialization in constexpr contexts</li>
+    <li>P1327R1, Allowing dynamic_cast and polymorphic typeid in constexpr contexts</li>
+    <li>P0912R5, Coroutines (requires <code>-fcoroutines</code>)</li>
+  </ul>  
+  </li>
+  <li>Several C++ Defect Reports have been resolved, e.g.:
+  <ul>
+    <li>DR 1560, lvalue-to-rvalue conversion in <code>?:</code></li>
+    <li>DR 1813, <code>__is_standard_layout</code> for a class with repeated
+	bases</li>
+    <li>DR 2094, volatile scalars are trivially copyable,</li>
+    <li>DR 2096, constraints on literal unions</li>
+    <li>DR 2413, <code>typename</code> in <code>conversion-function-id</code>s</li>
+    <li>DR 2352, Similar types and reference binding</li>
+    <li>DR 1601, Promotion of enumeration with fixed underlying type</li>
+    <li>DR 330, Qualification conversions and pointers to arrays of pointers</li>
+    <li>DR 1307, Overload resolution based on size of array
+	<code>initializer-list</code></li>
+    <li>DR 1710, Missing template keyword in <i>class-or-decltype</i></li>
+  </ul>  
+  </li>
+  <li>New warnings:
+    <ul>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/C_002b_002b-Dialect-Options.html#index-Wmismatched-tags"><code>-Wmismatched-tags</code></a>,
+	disabled by default, warns about declarations of structs, classes,
+	and class templates and their specializations with a class-key that
+	does not match either the definition or the first declaration if no
+	definition is provided.  The option is provided to ease portability
+	to Windows-based compilers.
+      </li>
+      <li><a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/C_002b_002b-Dialect-Options.html#index-Wredundant-tags"><code>-Wredundant-tags</code></a>,
+	disabled by default, warns about redundant <i>class-key</i> and
+	<i>enum-key</i> in contexts where the key can be eliminated without
+	causing an syntactic ambiguity.
+      </li>
+    </ul>
+  </li>
+  <li>
+    G++ can now detect modifying constant objects in constexpr evaluation
+    (which is undefined behavior).
+  </li>
+  <li>
+    G++ no longer emits bogus <code>-Wsign-conversion</code> warnings with explicit
+    casts.
+  </li>
+  <li>
+    Narrowing is now detected in more contexts (e.g., <code>case</code>
+    values).
+  </li>
+  <li>
+    Memory consumption of the compiler has been reduced in constexpr evaluation.
+  </li>
+  <li>
+    The <code>noexcept-specifier</code> is now properly treated as a
+    <em>complete-class context</em> as per
+    <a href="http://eel.is/c++draft/class.mem#def:complete-class_context">
+    [class.mem]</a>.
+  </li>
+  <li>
+    The attribute <code>deprecated</code> can now be used on
+    <code>namespace</code>s too.
+  </li>
+  <li>
+    <a name="empty_base">The ABI</a>
+    of passing and returning certain C++ classes by value changed
+    on several targets in GCC 10, including
+    <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94383">AArch64</a>,
+    <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94711">ARM</a>,
+    <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94707">PowerPC ELFv2</a>,
+    <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94704">S/390</a>
+    and
+    <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94706">Itanium</a>.
+    These changes affect classes with a zero-sized
+    subobject (an empty base class, or data member with the
+    <code>[[no_unique_address]]</code> attribute) where all other non-static
+    data members have the same type (this is called a "homogeneous aggregate"
+    in some ABI specifications, or if there is only one such member,
+    a "single element").
+    In <code>-std=c++17</code> and <code>-std=c++20</code> modes, classes with
+    an empty base class were not considered to have a single element or
+    to be a homogeneous aggregate, and so could be passed differently
+    (in the wrong registers or at the wrong stack address). This could make
+    code compiled with <code>-std=c++17</code> and <code>-std=c++14</code>
+    ABI incompatible.  This has been corrected and the empty bases are
+    ignored in those ABI decisions, so functions compiled with
+    <code>-std=c++14</code> and <code>-std=c++17</code> are now ABI compatible
+    again.
+    Example:
+    <code>struct empty {}; struct S : empty { float f; }; void f(S);</code>.
+    Similarly, in classes containing non-static data members with empty
+    class types using the C++20 <code>[[no_unique_address]]</code> attribute,
+    those members weren't ignored in the ABI argument passing decisions
+    as they should be.  Both of these ABI changes are now diagnosed with
+    <code>-Wpsabi</code>.
+  </li>
+</ul>
+
+<h4 id="libstdcxx">Runtime Library (libstdc++)</h4>
+<ul>
+  <li>Improved experimental C++2a support, including:
+    <ul>
+      <li>
+        Library concepts in <code>&lt;concepts&gt;</code> and
+        <code>&lt;iterator&gt;</code>.
+      </li>
+      <li>
+        Constrained algorithms in <code>&lt;ranges&gt;</code>,
+        <code>&lt;algorithm&gt;</code>, and
+        <code>&lt;memory&gt;</code> (thanks to Patrick Palka).
+      </li>
+      <li>
+        New algorithms <code>shift_left</code> and <code>shift_right</code>
+        (thanks to Patrick Palka).
+      </li>
+      <li> <code>std::span</code> (thanks to JeanHeyd Meneide). </li>
+      <li>
+        Three-way comparisons in <code>&lt;compare&gt;</code>
+        and throughout the library.
+      </li>
+      <li>
+        Constexpr support in <code>&lt;algorithm&gt;</code> and elsewhere
+        (thanks to Edward Smith-Rowland).
+      </li>
+      <li>
+        <code>&lt;stop_token&gt;</code> and <code>std::jthread</code>
+        (thanks to Thomas Rodgers).
+      </li>
+      <li>
+        <code>std::atomic_ref</code> and
+        <code>std::atomic&lt;<i>floating point</i>&gt;</code>.
+      </li>
+      <li>
+        Integer comparison functions
+        (<code>cmp_equal</code>, <code>cmp_less</code> etc.).
+      </li>
+      <li> <code>std::ssize</code>, <code>std::to_array</code>. </li>
+      <li>
+        <code>std::construct_at</code>, <code>std::destroy</code>,
+        constexpr <code>std::allocator</code>.
+      </li>
+      <li> Mathematical constants in <code>&lt;numbers&gt;</code>. </li>
+    </ul>
+  </li>
+  <li>Support for RDSEED in <code>std::random_device</code>.</li>
+  <li>
+    Reduced header dependencies, leading to faster compilation for some code.
+  </li>
+</ul>
+
+<h3 id="fortran">Fortran</h3>
+<ul>
+  <li><code>use_device_addr</code> of version 5.0 of the
+      <a href="https://www.openmp.org/specifications/">OpenMP specification</a>
+      is now supported. Note that otherwise OpenMP 4.5 is partially supported
+      in the Fortran compiler; the largest missing item is structure element
+      mapping.
+  </li>
+  <li>
+    The default buffer size for I/O using unformatted files has been
+    increased to 1048576.  The buffer size for can now be set at
+    runtime via the environment
+    variables <code>GFORTRAN_FORMATTED_BUFFER_SIZE</code> and
+    <code>GFORTRAN_UNFORMATTED_BUFFER_SIZE</code> for formatted
+    and unformatted files, respectively.
+  </li>
+  <li>
+    Mismatches between actual and dummy argument lists in a single
+    file are now rejected with an error. Use the new
+    option <code>-fallow-argument-mismatch</code> to turn these
+    errors into warnings; this option is implied
+    with <code>-std=legacy</code>.  <code>-Wargument-mismatch</code>
+    has been removed.
+  </li>
+  <li>
+    The handling of a BOZ literal constant has been reworked to provide
+    better conformance to the Fortran 2008 and 2018 standards.  In these
+    Fortran standards, a BOZ literal constant is a typeless and kindless
+    entity.  As a part of the rework, documented and undocumented
+    extensions to the Fortran standard now emit errors during compilation.
+    Some of these extensions are permitted with the
+    <code>-fallow-invalid-boz</code>, where the error is degraded to a
+    warning and the code is compiled as with older gfortran.
+  </li>
+  <li>
+    At any optimization level except<code>-Os</code>, gfortran now
+    uses inline packing for arguments instead of calling a library
+    routine.  If the source contains a large number of arguments that
+    need to be repacked, code size or time for compilation can become
+    excessive. If that is the case, <code>-fno-inline-arg-packing</code>
+    can be used to disable inline argument packing.
+  </li>
+  <li>
+    Legacy extensions:
+    <ul>
+      <li>
+        For formatted input/output, if the explicit widths after the data-edit
+        descriptors <code>I</code>, <code>F</code> and <code>G</code> have been
+        omitted, default widths are used.
+      </li>
+      <li>
+        A blank format item at the end of a format specification, i.e. nothing
+        following the final comma, is allowed.  Use the option
+        <code>-fdec-blank-format-item</code>; this option is implied with
+        <code>-fdec</code>.
+      </li>
+      <li>
+        The existing support for <code>AUTOMATIC</code> and <code>STATIC</code>
+        attributes has been extended to allow variables with the
+        <code>AUTOMATIC</code> attribute to be used in <code>EQUIVALENCE</code>
+        statements. Use <code>-fdec-static</code>; this option is implied by
+        <code>-fdec</code>.
+      </li>
+      <li>
+        Allow character literals in assignments and <code>DATA</code> statements
+        for numeric (<code>INTEGER</code>, <code>REAL</code>, or
+        <code>COMPLEX</code>) or <code>LOGICAL</code> variables.  Use the option
+        <code>-fdec-char-conversions</code>; this option is implied with
+        <code>-fdec</code>.
+      </li>
+      <li>
+        DEC comparisons, i.e. allow Hollerith constants to be used in comparisons
+        with <code>INTEGER</code>, <code>REAL</code>, <code>COMPLEX</code> and
+        <code>CHARACTER</code> expressions. Use the option <code>-fdec</code>.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Character type names in errors and warnings now include <code>len</code>
+    in addition to <code>kind</code>; <code>*</code> is used for assumed
+    length. The kind is omitted if it is the default kind. Examples:
+    <code>CHARACTER(12)</code>, <code>CHARACTER(6,4)</code>.
+  </li>
+  <li>
+    <code>CO_BROADCAST</code> now supports derived type variables including
+    objects with allocatable components. In this case, the optional arguments
+    <code>STAT=</code> and <code>ERRMSG=</code> are currently ignored.
+  </li>
+  <li>
+    The handling of module and submodule names has been reworked to allow the
+    full 63-character length mandated by the standard. Previously symbol names
+    were truncated if the combined length of module, submodule, and function
+    name exceeded 126 characters. This change therefore breaks the ABI, but only
+    for cases where this 126 character limit was exceeded.
+  </li>
+
+</ul>
+<!-- <h3 id="go">Go</h3> -->
+
+<!-- .................................................................. -->
+<!-- <h2 id="jit">libgccjit</h2> -->
+
+<!-- .................................................................. -->
+<h2 id="targets">New Targets and Target Specific Improvements</h2>
+
+<h3 id="arm-targets">AArch64 &amp; arm</h3>
+<ul>
+  <li>The AArch64 and arm ports now support condition flag output constraints
+  in inline assembly, as indicated by the <code>__GCC_ASM_FLAG_OUTPUTS__</code>.
+  On arm this feature is only available for A32 and T32 targets.
+  Please refer to the documentation for more details. </li>
+</ul>
+
+<h3 id="aarch64">AArch64</h3>
+<ul>
+  <li>There have been several improvements related to the Scalable
+  Vector Extension (SVE):
+    <ul>
+      <li>The SVE ACLE types and intrinsics are now supported.  They can
+      be accessed using the header file <code>arm_sve.h</code>.
+      </li>
+      <li>It is now possible to create fixed-length SVE types using
+      the <code>arm_sve_vector_bits</code> attribute.  For example:
+<pre>#if __ARM_FEATURE_SVE_BITS==512
+typedef svint32_t vec512 __attribute__((arm_sve_vector_bits(512)));
+typedef svbool_t pred512 __attribute__((arm_sve_vector_bits(512)));
+#endif</pre>
+      </li>
+      <li><code>-mlow-precision-div</code>, <code>-mlow-precision-sqrt</code>
+      and <code>-mlow-precision-recip-sqrt</code> now work for SVE.
+      </li>
+      <li><code>-msve-vector-bits=128</code> now generates
+      vector-length-specific code for little-endian targets.  It continues
+      to generate vector-length-agnostic code for big-endian targets,
+      just as previous releases did for all targets.
+      </li>
+      <li>The vectorizer is now able to use extending loads and truncating
+      stores, including gather loads and scatter stores.
+      </li>
+      <li>The vectorizer now compares the cost of vectorizing with SVE
+      and vectorizing with Advanced SIMD and tries to pick the best one.
+      Previously it would always use SVE if possible.
+      </li>
+      <li>If a vector loop uses Advanced SIMD rather than SVE, the vectorizer
+      now considers using SVE to vectorize the left-over elements (the
+      “scalar tail” or “epilog”).
+      </li>
+      <li>Besides these specific points, there have been many general
+      improvements to the way that the vectorizer uses SVE.
+      </li>
+    </ul>
+  </li>
+  <li>The <code>-mbranch-protection=pac-ret</code> option now accepts the
+  optional argument <code>+b-key</code> extension to perform return address
+  signing with the B-key instead of the A-key.
+  </li>
+  <li>The option <code>-moutline-atomics</code> has been added to aid
+  deployment of the Large System Extensions (LSE) on GNU/Linux systems built
+  with a baseline architecture targeting Armv8-A.  When the option is
+  specified code is emitted to detect the presence of LSE instructions at
+  runtime and use them for standard atomic operations.
+  For more information please refer to the documentation.
+  </li>
+  <li>The Transactional Memory Extension is now supported through ACLE
+  intrinsics.  It can be enabled through the <code>+tme</code> option
+  extension (for example, <code>-march=armv8.5-a+tme</code>).
+  </li>
+  <li>A number of features from Armv8.5-A are now supported through ACLE
+  intrinsics.  These include:
+    <ul>
+	<li>The random number instructions that can be enabled
+	through the (already present in GCC 9.1) <code>+rng</code> option
+	extension.</li>
+	<li>Floating-point intrinsics to round to integer instructions from
+	Armv8.5-A when targeting <code>-march=armv8.5-a</code> or later.</li>
+	<li>Memory Tagging Extension intrinsics enabled through the
+	<code>+memtag</code> option extension.</li>
+    </ul>
+  </li>
+  <li>Similarly, the following Armv8.6-A features are now supported
+  through ACLE intrinsics:
+    <ul>
+      <li>The bfloat16 extension.  This extension is enabled automatically
+      when Armv8.6-A is selected (such as by <code>-march=armv8.6-a</code>).
+      It can also be enabled for Armv8.2-A and later using the
+      <code>+bf16</code> option extension.
+      </li>
+      <li>The Matrix Multiply extension.  This extension is split into
+      three parts, one for each supported data type:
+	<ul>
+	  <li>Support for 8-bit integer matrix multiply instructions.
+	  This extension is enabled automatically when Armv8.6-A is
+	  selected.  It can also be enabled for Armv8.2-A and later using
+	  the <code>+i8mm</code> option extension.
+	  </li>
+	  <li>Support for 32-bit floating-point matrix multiply instructions.
+	  This extension can be enabled using the <code>+f32mm</code>
+	  option extension, which also has the effect of enabling SVE.
+	  </li>
+	  <li>Support for 64-bit floating-point matrix multiply instructions.
+	  This extension can be enabled using the <code>+f64mm</code>
+	  option extension, which likewise has the effect of enabling SVE.
+	  </li>
+	</ul>
+      </li>
+    </ul>
+  </li>
+  <li>SVE2 is now supported through ACLE intrinsics and (to a limited extent)
+  through autovectorization.  It can be enabled through the <code>+sve2</code>
+  option extension (for example, <code>-march=armv8.5-a+sve2</code>).
+  Additional extensions can be enabled through <code>+sve2-sm4</code>,
+  <code>+sve2-aes</code>, <code>+sve2-sha3</code> and
+  <code>+sve2-bitperm</code>.
+  </li>
+  <li>
+       Support has been added for the following processors
+       (GCC identifiers in parentheses):
+       <ul>
+         <li>Arm Cortex-A77 (<code>cortex-a77</code>).</li>
+	 <li>Arm Cortex-A76AE (<code>cortex-a76ae</code>).</li>
+	 <li>Arm Cortex-A65 (<code>cortex-a65</code>).</li>
+	 <li>Arm Cortex-A65AE (<code>cortex-a65ae</code>).</li>
+	 <li>Arm Cortex-A34 (<code>cortex-a34</code>).</li>
+	 <li>Marvell ThunderX3 (<code>thunderx3t110</code>).</li>
+       </ul>
+       The GCC identifiers can be used
+       as arguments to the <code>-mcpu</code> or <code>-mtune</code> options,
+       for example: <code>-mcpu=cortex-a77</code> or
+       <code>-mtune=cortex-a65ae</code> or as arguments to the equivalent target
+       attributes and pragmas.
+  </li>
+</ul>
+
+<h3 id="arm">arm</h3>
+<ul>
+  <li>Support for the FDPIC ABI has been added. It uses 64-bit
+  function descriptors to represent pointers to functions, and enables
+  code sharing on MMU-less systems. The corresponding target triple is
+  <code>arm-uclinuxfdpiceabi</code>, and the C library is uclibc-ng.
+  </li>
+  <li>Support has been added for the Arm EABI on NetBSD through the
+  <code>arm*-*-netbsdelf-*eabi*</code> triplet.
+  </li>
+  <li>The handling of 64-bit integer operations has been significantly reworked
+  and improved leading to improved performance and reduced stack usage when using
+  64-bit integral data types.  The option <code>-mneon-for-64bits</code> is now
+  deprecated and will be removed in a future release.</li>
+  <li>
+       Support has been added for the following processors
+       (GCC identifiers in parentheses):
+       <ul>
+         <li>Arm Cortex-A77 (<code>cortex-a77</code>).</li>
+         <li>Arm Cortex-A76AE (<code>cortex-a76ae</code>).</li>
+         <li>Arm Cortex-M35P (<code>cortex-m35p</code>).</li>
+       </ul>
+       The GCC identifiers can be used
+       as arguments to the <code>-mcpu</code> or <code>-mtune</code> options,
+       for example: <code>-mcpu=cortex-a77</code> or
+       <code>-mtune=cortex-m35p</code>.
+  </li>
+  <li>Support has been extended for the ACLE
+  <a href="https://developer.arm.com/docs/101028/0009/data-processing-intrinsics">
+  data-processing intrinsics</a> to include 32-bit SIMD, saturating arithmetic,
+  16-bit multiplication and other related intrinsics aimed at DSP algorithm
+  optimization.
+  </li>
+  <li>Support for <code>-mpure-code</code> in Thumb-1 (v6m) has been
+  added: this M-profile feature is no longer restricted to targets
+  with <code>MOVT</code>. For example, <code>-mcpu=cortex-m0</code>
+  now supports this option.</li>
+  <li>Support for the Custom Datapath Extension beta ACLE
+  <a href="https://developer.arm.com/docs/101028/0010/custom-datapath-extension">
+  intrinsics</a> has been added.</li>
+</ul>
+
+
+<h3 id="amdgcn">AMD Radeon (GCN)</h3>
+<ul>
+  <li>The code generation and in particular the vectorization support has been
+  much improved.</li>
+</ul>
+
+<h3 id="arc">ARC</h3>
+<ul>
+  <li>The interrupt service routine functions save all used
+  registers, including extension registers and auxiliary registers
+  used by Zero Overhead Loops.</li>
+  <li>Improve code size by using multiple short instructions instead of
+  a single long <code>mov</code> or <code>ior</code> instruction when its
+  long immediate constant is known.</li>
+  <li>Fix usage of the accumulator register for ARC600.</li>
+  <li>Fix issues with <code>uncached</code> attribute.</li>
+  <li>Remove <code>-mq-class</code> option.</li>
+  <li>Improve 64-bit integer addition and subtraction operations.</li>
+</ul>
+
+<h3 id="avr">AVR</h3>
+<ul>
+  <li>Support for the XMEGA-like devices
+    <blockquote>
+      ATtiny202, ATtiny204, ATtiny402, ATtiny404, ATtiny406, ATtiny804,
+      ATtiny806, ATtiny807, ATtiny1604, ATtiny1606, ATtiny1607, ATmega808,
+      ATmega809, ATmega1608, ATmega1609, ATmega3208, ATmega3209,
+      ATmega4808, ATmega4809
+    </blockquote>
+    has been added.
+  </li>
+  <li>
+    A new command-line option <code>-nodevicespecs</code> has been added.
+    It allows to provide a custom device-specs file by means of
+    <blockquote><code>
+	avr-gcc -nodevicespecs -specs=<em>my-spec-file</em> &lt;options&gt;
+    </code></blockquote>
+    and without the need to provide options <code>-B</code> and
+    <code>-mmcu=</code>.
+    See
+    <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/AVR-Options.html#index-nodevicespecs">AVR
+      command-line options</a> for details.
+    This feature is also available in GCC 9.3+ and GCC 8.4+.
+  </li>
+  <li>
+    New command-line options <code>-mdouble=[32,64]</code> and
+    <code>-mlong-double=[32,64]</code> have been added.  They allow
+    to choose the size (in bits) of the <code>double</code> and
+    <code>long double</code> types, respectively.  Whether or not the
+    mentioned layouts are available, whether the options act
+    as a multilib option, and the default for either option
+    are controlled by the new
+    <a href="https://gcc.gnu.org/install/configure.html#avr">AVR configure
+      options</a>
+    <code>--with-double=</code> and <code>--with-long-double=</code>.
+  </li>
+  <li>
+    A new configure option <code>--with-libf7=</code> has been added.
+    It controls to which level avr-libgcc provides 64-bit floating point
+    support by means of
+    <a href="https://gcc.gnu.org/wiki/avr-gcc#Libf7">Libf7</a>.
+  </li>
+  <li>
+    A new configure option <code>--with-double-comparison=</code> has been
+    added. It's unlikely you need to set this option by hand.
+  </li>
+</ul>
+
+<!-- <h3 id="hsa">Heterogeneous Systems Architecture</h3> -->
+
+<h3 id="x86">IA-32/x86-64</h3>
+<ul>
+  <li>Support to expand <code>__builtin_roundeven</code> into the appropriate
+    SSE 4.1 instruction has been added.
+  </li>
+  <li>New ISA extension support for Intel ENQCMD was added to GCC.  ENQCMD
+      intrinsics are available via the <code>-menqcmd</code> compiler switch.
+  </li>
+  <li>GCC now supports the Intel CPU named Cooperlake through
+    <code>-march=cooperlake</code>.
+    The switch enables the AVX512BF16 ISA extensions.
+  </li>
+  <li>GCC now supports the Intel CPU named Tigerlake through
+    <code>-march=tigerlake</code>.
+    The switch enables the MOVDIRI MOVDIR64B AVX512VP2INTERSECT ISA extensions.
+  </li>
+</ul>
+
+
+ <h3 id="mips">MIPS</h3>
+ <ul>
+    <li>The <code>mips*-*-linux*</code> targets now mark object files with
+      appropriate GNU-stack note, facilitating use of non-executable stack
+      hardening on GNU/Linux.
+      The soft-float targets have this feature enabled by default, while
+      for hard-float targets it is required for GCC to be configured with
+      <code>--with-glibc-version=2.31</code>
+      against glibc 2.31 or later.
+   </li>
+ </ul>
+
+<!-- <h3 id="mep">MeP</h3> -->
+
+<!-- <h3 id="msp430">MSP430</h3> -->
+
+<!-- <h3 id="nds32">NDS32</h3> -->
+
+<!-- <h3 id="nios2">Nios II</h3> -->
+
+<!-- <h3 id="nvptx">NVPTX</h3> -->
+
+<!-- <h3 id="hppa">PA-RISC</h3> -->
+
+<h3 id="powerpc">PowerPC / PowerPC64 / RS6000</h3>
+<ul>
+  <li>
+    Many vector builtins have been listed as deprecated in the
+    <a href="https://openpowerfoundation.org/?resource_lib=64-bit-elf-v2-abi-specification-power-architecture">64-Bit ELF V2 ABI Specification</a>
+    for quite a number of years.  The vector builtins listed in Tables A.8
+    through A.10 are now deprecated for GCC 10, and will likely be removed
+    from support in GCC 11.
+  </li>
+</ul>
+
+<h3 id="pru">PRU</h3>
+<ul>
+  <li>
+    A new back end targeting TI PRU I/O processors has been contributed to GCC.
+  </li>
+</ul>
+
+<h3 id="riscv">RISC-V</h3>
+<ul>
+  <li>
+    The <code>riscv*-*-*</code> targets now require GNU binutils version 2.30
+    or later, to support new assembly instructions produced by GCC.
+  </li>
+</ul>
+
+<!-- <h3 id="rx">RX</h3> -->
+
+<!-- <h3 id="s390">S/390, System z, IBM z Systems</h3> -->
+
+<!-- <h3 id="sh">SH</h3> -->
+
+<!-- <h3 id="sparc">SPARC</h3> -->
+
+<!-- <h3 id="Tile">Tile</h3> -->
+
+<h3 id="v850">V850</h3>
+<ul>
+  <li>The ABI for V850 nested functions has been changed.  Previously
+      the V850 port used %r20 for the static chain pointer, now the
+      port uses %r19.  This corrects a long standing latent bug in the
+      v850 port where a call to a nested function would unexpectedly
+      change the value in %r20.
+  </li>
+</ul>
+
+<!-- .................................................................. -->
+<h2 id="os">Operating Systems</h2>
+
+<!-- <h3 id="aix">AIX</h3> -->
+
+<!-- <h3 id="fuchsia">Fuchsia</h3> -->
+
+<!-- <h3 id="dragonfly">DragonFly BSD</h3> -->
+
+<!-- <h3 id="freebsd">FreeBSD</h3> -->
+
+<!-- <h3 id="gnulinux">GNU/Linux</h3> -->
+
+<!-- <h3 id="rtems">RTEMS</h3> -->
+
+<!-- <h3 id="solaris">Solaris</h3> -->
+
+<!-- <h3 id="vxmils">VxWorks MILS</h3> -->
+
+<!-- <h3 id="windows">Windows</h3> -->
+
+
+<!-- .................................................................. -->
+<!-- <h2>Documentation improvements</h2> -->
+
+
+<!-- .................................................................. -->
+<h2 id="plugins">Improvements for plugin authors</h2>
+<ul>
+  <li>
+    GCC diagnostics can now have a chain of events associated with them,
+    describing a path through the code that triggers the problem.
+    These can be printed by the diagnostics subsystem in various ways,
+    controlled by the
+    <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Diagnostic-Message-Formatting-Options.html#index-fdiagnostics-path-format">-fdiagnostics-path-format</a>
+    option, or captured in JSON form via
+    <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Diagnostic-Message-Formatting-Options.html#index-fdiagnostics-format">-fdiagnostics-format=json</a>.</li>
+  <li>
+    GCC diagnostics can now be associated with
+    <a href="https://cwe.mitre.org">CWE weakness identifiers</a>, which
+    will appear on the standard error stream, and in the JSON output from
+    <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Diagnostic-Message-Formatting-Options.html#index-fdiagnostics-format">-fdiagnostics-format=json</a>.
+  </li>
+</ul>
+
+<!-- .................................................................. -->
+<h2>Other significant improvements</h2>
+<ul>
+  <li>
+    To allow inline expansion of both <code>memcpy</code>
+    and <code>memmove</code>, the existing <code>movmem</code> instruction
+    patterns used for non-overlapping memory copies have been renamed to
+    <code>cpymem</code>. The <code>movmem</code> name is now used
+    for overlapping memory moves, consistent with the
+    library functions <code>memcpy</code> and <code>memmove</code>.
+  </li>
+  <li>
+    For many releases, when GCC emits a warning it prints the option
+    controlling that warning.  As of GCC 10, that option text is now a
+    clickable hyperlink for the documentation of that option (assuming a
+    <a href="https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda">sufficiently capable terminal</a>).
+    This behavior can be controlled via a new
+    <a href="https://gcc.gnu.org/onlinedocs/gcc-10.1.0/gcc/Diagnostic-Message-Formatting-Options.html#index-fdiagnostics-urls">-fdiagnostics-urls</a>
+    option (along with various environment variables and heuristics
+    documented with that option).
+  </li>
+</ul>
+
+<!-- .................................................................. -->
+<h2><a name="10.1">GCC 10.1</a></h2>
+
+<p>This is the <a href="https://gcc.gnu.org/bugzilla/buglist.cgi?bug_status=RESOLVED&amp;resolution=FIXED&amp;target_milestone=10.0">list
+of problem reports (PRs)</a> from GCC's bug tracking system that are
+known to be fixed in the 10.1 release. This list might not be
+complete (that is, it is possible that some PRs that have been fixed
+are not listed here).</p>
+
+<!-- .................................................................. -->
+
+
+
+
+<!-- ==================================================================== -->
+
+<div class="copyright">
+
+<address>For questions related to the use of GCC,
+please consult these web pages and the
+<a href="https://gcc.gnu.org/onlinedocs/">GCC manuals</a>. If that fails,
+the <a href="mailto:gcc-help@gcc.gnu.org">gcc-help@gcc.gnu.org</a>
+mailing list might help.
+Comments on these web pages and the development of GCC are welcome on our
+developer list at <a href="mailto:gcc@gcc.gnu.org">gcc@gcc.gnu.org</a>.
+All of <a href="https://gcc.gnu.org/lists.html">our lists</a>
+have public archives.
+</address>
+
+<p>Copyright (C)
+<a href="https://www.fsf.org">Free Software Foundation, Inc.</a>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+<p>These pages are
+<a href="https://gcc.gnu.org/about.html">maintained by the GCC team</a>.
+Last modified 2020-05-07<!-- IGNORE DIFF
+--><a href="http://validator.w3.org/check/referer">.</a></p>
+
+</div>
+
+<!-- ==================================================================== -->
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+* package utils/creduce-clang-crash.py
+
+* add the support of libclang in llvm default (for now, it is
+called libclang1-3.3.so)
+
+* move the header at the right place in libclang-dev
+
+* In 1:7.0.1~+rc2-5, we did:
+  * Fix a baseline violation on armhf (Closes: #914268)
+    clang-arm-default-vfp3-on-armv7a.patch has been updated to disable
+    neon in another place
+It caused 200+ tests to fail on arm:
+https://buildd.debian.org/status/fetch.php?pkg=llvm-toolchain-7&arch=amd64&ver=1%3A7.0.1%7E%2Brc2-4&stamp=1542503855&raw=0
+https://buildd.debian.org/status/fetch.php?pkg=llvm-toolchain-7&arch=amd64&ver=1%3A7.0.1%7E%2Brc2-5&stamp=1542863723&raw=0

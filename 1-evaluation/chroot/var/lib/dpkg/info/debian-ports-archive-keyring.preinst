@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+# Automatically added by dh_installdeb/13.3.4
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2014.gpg 2016.01.25\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2015.gpg 2016.01.25\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2016.gpg 2018.01.05\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2017.gpg 2018.12.27\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2018.gpg 2019.11.05\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2019.gpg 2020.01.11\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2020.gpg 2020.02.02\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2021.gpg 2022.02.15\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/apt/trusted.gpg.d/debian-ports-archive-2022.gpg 2023.02.01\~ -- "$@"
+# End automatically added section

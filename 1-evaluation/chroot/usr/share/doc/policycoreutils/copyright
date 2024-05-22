@@ -1,0 +1,45 @@
+This is the Debian package for policycoreutils, and it is built from
+sources obtained from: http://www.nsa.gov/selinux/code/download5.cfm.
+
+This package was debianized by Colin Walters <walters@debian.org> on
+Thu,  3 Jul 2003 17:10:57 -0400.
+
+This package is maintained by Manoj Srivastava <srivasta@debian.org>.
+
+Portions of this package are copyright by various people, including
+
+Copyright (C) 2001 Justin R. Smith (jsmith@mcs.drexel.edu)
+Copyright (C) 1995, 1996, 1997 by Ulrich Drepper <drepper@gnu.ai.mit.edu>
+Copyright (c) 2005 Manoj Srivastava <srivasta@debian.org>
+Copyright (C) 2004-2009 Red Hat, Inc.
+Copyright (c) 2005 Dan Walsh <dwalsh@redhat.com>
+Copyright (C) 2004, 2005 Tresys Technology, LLC
+Copyright 1999-2004 Gentoo Technologies, Inc.
+Copyright (C) 2006 Free Software Foundation, Inc.
+
+
+This packaged is licensed under the terms of the GNU GPL.
+
+   These programs are free software; you can redistribute it and/or modify
+   them under the terms of the GNU General Public License as published by
+   the Free Software Foundation; version 2 dated June, 1991.
+
+   These programs are distributed in the hope that they will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+The Debian specific changes are © 2005-2009, Manoj Srivastava
+<srivasta@debian.org>, and distributed under the terms of the GNU
+General Public License, version 2.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL-2'.
+
+    A copy of the GNU General Public License is also available at
+    <URL:http://www.gnu.org/copyleft/gpl.html>.  You may also obtain
+    it by writing to the Free Software Foundation, Inc., 51 Franklin
+    St, Fifth Floor, Boston, MA 02110-1301, USA.
+
+Manoj Srivastava <srivasta@debian.org>
+arch-tag: d4250e44-a0e0-4ee0-adb9-2bd74f6eeb27

@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+# Automatically added by dh_installdeb/13.3.3
+dpkg-maintscript-helper rm_conffile /etc/default/sandbox 2.1.13-1\~ -- "$@"
+dpkg-maintscript-helper rm_conffile /etc/init.d/sandbox 2.1.13-1\~ -- "$@"
+dpkg-maintscript-helper mv_conffile /etc/init.d/debian-selinux-autorelabel /etc/init.d/selinux-autorelabel 2.5-2\~ -- "$@"
+# End automatically added section

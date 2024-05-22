@@ -1,0 +1,4 @@
+# selinux-autorelabel-mark.service functionality is included in the LSB
+# selinux-autorelabel script, that's why there is no conterpart in the LSB
+# world
+policycoreutils: package-supports-alternative-init-but-no-init.d-script lib/systemd/system/selinux-autorelabel-mark.service
