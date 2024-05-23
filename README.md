@@ -267,9 +267,28 @@ host$ ./evaluate.sh
 
 execute BPF programs to prevent the vulnerability on the left terminal `root@vm$ ./bpf/hotbpf_effective ` first
 
-execute POCs programs to exploit the `CVE-2021-4154` on the right terminal `root@vm$ ./POCs/CVE-2021-4154/poc` then
+execute POCs programs to exploit the `CVE-2021-4154` on the right terminal
+```sh
+# add a normal user to execute POC, set passwd to `evaluate` too
+root@vm$ addusr evaluate
 
-After the attack, we can see the system is still functioning.
+# copy POCs to evaluate directory
+root@vm$ cp -r POCs /home/evaluate/
+
+# set permission
+root@vm$ chown -R evaluate:evaluate /home/evaluate/POCs
+
+# change to evaluate
+evaluate@vm$ su evaluate
+
+# cd to CVE-2021-4154 directory
+evaluate@vm$ cd /home/evaluate/POCs/CVE-2021-4154
+
+# compile and execute
+evaluate@vm$ make && ./poc
+```
+
+After the attack, we can see the system is still functioning, **but the POCs cannot get `/bin/bash` shell**
 
 now shut down the left and right terminal to continue.
 
