@@ -1,4 +1,24 @@
+import argparse
 
+def parse_arguments():
+    # Create the parser
+    parser = argparse.ArgumentParser(description="Process some integers.")
+    
+    # Add the `-name` argument which takes exactly one argument
+    parser.add_argument('-name', type=str, required=True, help='Name argument (exactly one required)')
+    
+    # Add the `-alloc` argument which takes one or more arguments
+    parser.add_argument('-alloc', type=str, nargs='+', required=True, help='Allocation arguments (one or more required)')
+    
+    # Add the `-free` argument which takes one or more arguments
+    parser.add_argument('-free', type=str, nargs='+', required=True, help='Free arguments (one or more required)')
+    
+    # Parse the arguments
+    args = parser.parse_args()
+    
+    return args
+
+header = '''
 #include <uapi/linux/bpf.h>
 #include <linux/version.h>
 #include <linux/ptrace.h>
@@ -125,75 +145,9 @@ u32 get_zone(u32 gfp_flags)
     }
     return ret;
 }
+'''
 
-
-SEC("kprobe/__alloc_file")
-int probe_alloc_start___alloc_file(struct pt_regs *ctx)
-{
-    u32 pid = bpf_get_current_pid_tgid();
-    u32 val = 1;
-    int err = 0;
-    err = bpf_map_update_elem(&allocs, &pid, &val, BPF_ANY);
-    if (err < 0) {
-        return err;
-    }
-
-    return 0;
-}
-
-SEC("kretprobe/__alloc_file")
-int probe_alloc_end___alloc_file(struct pt_regs *ctx)
-{
-    u32 pid = bpf_get_current_pid_tgid();
-    int err = 0;
-    u32* pval = NULL;
-    u32 val = 0;
-    pval = bpf_map_lookup_elem(&allocs, &pid);
-    if (pval) {
-        err = bpf_map_delete_elem(&allocs, &pid);
-        if (err < 0) {
-            return err;
-        }
-    } else {
-        return err;
-    }
-    return 0;
-}
-
-
-
-SEC("kprobe/file_free_rcu")
-int probe_start_file_free_rcu(struct pt_regs *ctx)
-{
-    u32 pid = bpf_get_current_pid_tgid();
-    u32 val = 1;
-    int err = 0;
-    err = bpf_map_update_elem(&frees, &pid, &val, BPF_ANY);
-    if (err < 0) {
-        return err;
-    }
-
-    return 0;
-}
-
-SEC("kretprobe/file_free_rcu")
-int probe_end_file_free_rcu(struct pt_regs *ctx)
-{
-    u32 pid = bpf_get_current_pid_tgid();
-    int err = 0;
-    u32* pval = NULL;
-    u32 val = 0;
-    pval = bpf_map_lookup_elem(&frees, &pid);
-    if (pval) {
-        err = bpf_map_delete_elem(&frees, &pid);
-        if (err < 0) {
-            return err;
-        }
-    }
-    return 0;
-}
-
-
+allocs_frees = '''
 int allocation(u32 pid)
 {
     u32 *pval = NULL;
@@ -307,7 +261,7 @@ int probe_kmem_cache_alloc_free_file(struct pt_regs* ctx)
     if (pkey) {
         err = bpf_map_delete_elem(&addr2key, &alloc_addr);
         if (err < 0) {
-            bpf_printk("kfree addr2key delete failed: %d\n", err);
+            bpf_printk("kfree addr2key delete failed: %d\\n", err);
             return err;
         }
 
@@ -360,12 +314,12 @@ int probe_kmalloc2(struct pt_regs *ctx)
     if (!pcache) {
         cache_addr = bpf_create_slab_cache(alloc_size, gfp_flags, key);
         if (!cache_addr) {
-            bpf_printk("probe create cache failed\n");
+            bpf_printk("probe create cache failed\\n");
             return -1;
         }
         err = bpf_map_update_elem(&key2cache, &key, &cache_addr, BPF_ANY);
         if (err < 0) {
-            bpf_printk("update key2cache failed: %d\n", err);
+            bpf_printk("update key2cache failed: %d\\n", err);
             return err;
         }
     } else {
@@ -375,14 +329,14 @@ int probe_kmalloc2(struct pt_regs *ctx)
     // alloc a new object
     alloc_addr = bpf_cache_alloc(cache_addr, gfp_flags);
     if (alloc_addr == 0) {
-        bpf_printk("probe kmalloc failed\n");
+        bpf_printk("probe kmalloc failed\\n");
         return -1;
     }
 
     // add new object to inuse map for free.
     err = bpf_map_update_elem(&addr2key, &alloc_addr, &key, BPF_ANY);
     if (err < 0) {
-        bpf_printk("addr2key update failed: %d\n", err);
+        bpf_printk("addr2key update failed: %d\\n", err);
         return err;
     }
 
@@ -417,7 +371,7 @@ int probe_kfree3(struct pt_regs* ctx)
 	if (pkey) {
 		err = bpf_map_delete_elem(&addr2key, &alloc_addr);
 		if (err < 0) {
-			bpf_printk("kfree addr2key delete failed: %d\n", err);
+			bpf_printk("kfree addr2key delete failed: %d\\n", err);
 			return err;
 		}
 
@@ -426,7 +380,7 @@ int probe_kfree3(struct pt_regs* ctx)
 		if (pcache) {
 			struct kmem_cache *cache = (struct kmem_cache*)(*pcache);
 			alloc_size = BPF_CORE_READ(cache, size);
-			bpf_printk("alloc_size: %016lx  %016lx, %lu\n", alloc_addr, *pcache, alloc_size);
+			bpf_printk("alloc_size: %016lx  %016lx, %lu\\n", alloc_addr, *pcache, alloc_size);
 			err = bpf_set_pt_present((alloc_addr + alloc_size - 4096), 1);
 			if (err == 0) {
 			}
@@ -440,3 +394,250 @@ int probe_kfree3(struct pt_regs* ctx)
 }
 
 // ============================================================================
+'''
+
+allocs = '''
+
+SEC("kprobe/{alloc}")
+int probe_alloc_start_{alloc}(struct pt_regs *ctx)
+{{
+    u32 pid = bpf_get_current_pid_tgid();
+    u32 val = 1;
+    int err = 0;
+    err = bpf_map_update_elem(&allocs, &pid, &val, BPF_ANY);
+    if (err < 0) {{
+        return err;
+    }}
+
+    return 0;
+}}
+
+SEC("kretprobe/{alloc}")
+int probe_alloc_end_{alloc}(struct pt_regs *ctx)
+{{
+    u32 pid = bpf_get_current_pid_tgid();
+    int err = 0;
+    u32* pval = NULL;
+    u32 val = 0;
+    pval = bpf_map_lookup_elem(&allocs, &pid);
+    if (pval) {{
+        err = bpf_map_delete_elem(&allocs, &pid);
+        if (err < 0) {{
+            return err;
+        }}
+    }} else {{
+        return err;
+    }}
+    return 0;
+}}
+
+'''
+
+frees = '''
+
+SEC("kprobe/{free}")
+int probe_start_{free}(struct pt_regs *ctx)
+{{
+    u32 pid = bpf_get_current_pid_tgid();
+    u32 val = 1;
+    int err = 0;
+    err = bpf_map_update_elem(&frees, &pid, &val, BPF_ANY);
+    if (err < 0) {{
+        return err;
+    }}
+
+    return 0;
+}}
+
+SEC("kretprobe/{free}")
+int probe_end_{free}(struct pt_regs *ctx)
+{{
+    u32 pid = bpf_get_current_pid_tgid();
+    int err = 0;
+    u32* pval = NULL;
+    u32 val = 0;
+    pval = bpf_map_lookup_elem(&frees, &pid);
+    if (pval) {{
+        err = bpf_map_delete_elem(&frees, &pid);
+        if (err < 0) {{
+            return err;
+        }}
+    }}
+    return 0;
+}}
+
+'''
+
+user = '''
+/*
+ * Software Name: hotbpf
+ * Author: Yueqi Chen <yueqichen.0x0@gmail.com>
+ *		   Zicheng Wang <wangzccs@gmail.com>
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/resource.h>
+#include <bpf/libbpf.h>
+#include <fcntl.h>
+
+#define VMALLOC_FREE_PATH "/proc/vmalloc_free"
+
+static volatile sig_atomic_t stop;
+
+static void sig_int(int signo)
+{
+    stop = 1;
+}
+
+
+
+int main(int argc, char **argv)
+{
+    struct bpf_link *links[2];
+    struct bpf_program *prog;
+    struct bpf_object *obj;
+    char filename[256];
+    int map_fd[3], i, j = 0;
+    int vmalloc_fd = 0;
+    __u64 key, next_key, val;
+    int trace_fd;
+
+    trace_fd = open("/sys/kernel/debug/tracing/trace_pipe", O_RDONLY, 0);
+    if (trace_fd < 0) {
+        printf("cannot open trace_pipe %d\\n", trace_fd);
+        return trace_fd;
+    }
+
+
+    snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
+
+    obj = bpf_object__open_file(filename, NULL);
+    if (libbpf_get_error(obj)) {
+        fprintf(stderr, "ERROR: opening BPF object file failed\\n");
+        return 0;
+    }
+
+    /* load BPF program */
+    if (bpf_object__load(obj)) {
+        fprintf(stderr, "ERROR: loading BPF object file failed\\n");
+        goto cleanup;
+    }
+
+    map_fd[0] = bpf_object__find_map_fd_by_name(obj, "addr2key");
+    if (map_fd[0] < 0) {
+        fprintf(stderr, "ERROR: finding a map in obj file failed\\n");
+        goto cleanup;
+    }
+
+    map_fd[1] = bpf_object__find_map_fd_by_name(obj, "key2cache");
+    if (map_fd[1] < 0) {
+        fprintf(stderr, "ERROR: finding a map in obj file failed\\n");
+        goto cleanup;
+    }
+
+    bpf_object__for_each_program(prog, obj) {
+        links[j] = bpf_program__attach(prog);
+        if (libbpf_get_error(links[j])) {
+            fprintf(stderr, "ERROR: bpf_program__attach failed\\n");
+            links[j] = NULL;
+            goto cleanup;
+        }
+        j++;
+    }
+
+    if (signal(SIGINT, sig_int) == SIG_ERR) {
+        fprintf(stderr, "can't set signal handler: %s\\n", strerror(errno));
+        goto cleanup;
+    }
+
+    printf("Please run `sudo cat /sys/kernel/debug/tracing/trace_pipe` "
+           "to see output of the BPF programs.\\n");
+
+
+    printf("start tracing\\n");
+    while (!stop) {
+        // fprintf(stderr, ".");
+        // sleep(1);
+        static char buf[4096];
+        ssize_t sz;
+        sz = read(trace_fd, buf, sizeof(buf) - 1);
+        if (sz > 0) {
+            buf[sz] = '\\0';
+            // printf("trace: %s\\n", buf);
+            puts(buf);
+        }
+    }
+
+
+    cleanup:
+    // bpf_link__destroy(link);
+    printf("\\nprint addr2key\\n");
+    int count = 0;
+    while (bpf_map_get_next_key(map_fd[0], &key, &next_key) == 0) {
+        bpf_map_lookup_elem(map_fd[0], &next_key, &val);
+        key = next_key;
+        printf("%5d:%016llx:%016llx\\n", ++count, key, val);
+    }
+
+    key = 0;
+    printf("\\nprint key2cache\\n");
+    count = 0;
+    while (bpf_map_get_next_key(map_fd[1], &key, &next_key) == 0) {
+        bpf_map_lookup_elem(map_fd[1], &next_key, &val);
+        key = next_key;
+        printf("%5d:%016llx:%016llx\\n", ++count, key, val);
+    }
+
+    key = 0;
+
+    for (j--; j >= 0; j--)
+        bpf_link__destroy(links[j]);
+    bpf_object__close(obj);
+
+    close(trace_fd);
+    return 0;
+
+}
+'''
+
+
+if __name__ == "__main__":
+    # Get the parsed arguments
+    args = parse_arguments()
+    
+    # Print the parsed arguments to verify
+    # print("Name Argument:", args.name)
+    # print("Alloc Arguments:", args.alloc)
+    # print("Free Arguments:", args.free)
+
+    # print(allocs_frees)
+    # print(allocs.format(alloc='a'))
+
+    kern = header
+
+    for elem in args.alloc:
+        kern += allocs.format(alloc=elem)
+
+    for elem in args.free:
+        kern += frees.format(free=elem)
+
+    kern += allocs_frees
+
+    with open('hotbpf_'+args.name+'_kern.c', 'w') as f:
+        f.write(kern)
+
+    with open('hotbpf_'+args.name+'_user.c', 'w') as f:
+        f.write(user)
+
+    print('Makefile commands:\n')
+    print('tprogs-y +=hotbpf_%s\n'%args.name)
+    print('hotbpf_%s-objs := hotbpf_%s_user.o\n'%(args.name,args.name))
+    print('always-y += hotbpf_%s_kern.o\n'%args.name)
+
+
+    

@@ -1,3 +1,4 @@
+
 /*
  * Software Name: hotbpf
  * Author: Yueqi Chen <yueqichen.0x0@gmail.com>
@@ -42,11 +43,6 @@ int main(int argc, char **argv)
         return trace_fd;
     }
 
-    // vmalloc_fd = open(VMALLOC_FREE_PATH, O_WRONLY);
-    // if (vmalloc_fd == -1) {
-    //     perror("Failed to open " VMALLOC_FREE_PATH);
-    //     exit(EXIT_FAILURE);
-    // }
 
     snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
 
@@ -73,12 +69,6 @@ int main(int argc, char **argv)
         fprintf(stderr, "ERROR: finding a map in obj file failed\n");
         goto cleanup;
     }
-
-    // map_fd[2] = bpf_object__find_map_fd_by_name(obj, "chunk_pool_map");
-    // if (map_fd[2] < 0) {
-    // 	fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-    // 	goto cleanup;
-    // }
 
     bpf_object__for_each_program(prog, obj) {
         links[j] = bpf_program__attach(prog);
@@ -134,30 +124,12 @@ int main(int argc, char **argv)
     }
 
     key = 0;
-    // printf("\nprint chunk_pool\n");
-    // count = 0;
-    // while (bpf_map_get_next_key(map_fd[2], &key, &next_key) == 0) {
-    // 	bpf_map_lookup_elem(map_fd, &next_key, &val);
-    // 	key = next_key;
-    // 	if (write(vmalloc_fd, &key, sizeof(key)) == -1) {
-    // 		perror("Failed to write to " VMALLOC_FREE_PATH);
-    // 		close(vmalloc_fd);
-    // 		exit(EXIT_FAILURE);
-    // 	}
-    // 	printf("%5d:%016llx:%016llx\n", ++count, key, val);
-    // }
-
 
     for (j--; j >= 0; j--)
         bpf_link__destroy(links[j]);
     bpf_object__close(obj);
 
-    // close(vmalloc_fd);
     close(trace_fd);
     return 0;
 
-
-
-
-    return 0;
 }

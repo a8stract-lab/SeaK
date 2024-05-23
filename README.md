@@ -210,15 +210,18 @@ __alloc_file
 generate BPF AA program for 
 
 ```sh
+# exit analyzer directory to the 2-source-code
+host$ cd ../
+
 # generate AA code
-host$ python3 gen_hotbpf.py effective __alloc_file  file_free_rcu
+host$ python3 gen_hotbpf.py -name effective -alloc __alloc_file -free file_free_rcu
 
 # copy code in the BPF compilation directory
-host$ cp hotbpf_effective_user.c ../linux-5.15.106/sample/bpf/hotbpf_effective_user.c
-host$ cp hotbpf_effective_kern.c ../linux-5.15.106/sample/bpf/hotbpf_effective_kern.c
+host$ mv hotbpf_effective_user.c linux-5.15.106/samples/bpf/
+host$ mv hotbpf_effective_kern.c linux-5.15.106/samples/bpf/
 
 # get into the BPF compilation directory
-host$ cd ../linux-5.15.106/sample/
+host$ cd linux-5.15.106/samples/bpf/
 ```
 
 
@@ -255,6 +258,7 @@ host$ make -j8
 cd into evaluate directory, boot up the virtual machine, 2 terminals pop out, insert `root` to login in the left terminal.
 
 ```sh
+host$ cd $PATH_TO_SEAK/SeaK/1-evaluation
 host$ ./evaluate.sh
 ```
 

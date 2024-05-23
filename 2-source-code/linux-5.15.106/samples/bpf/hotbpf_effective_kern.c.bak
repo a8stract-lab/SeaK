@@ -8,15 +8,17 @@
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_core_read.h>
 
+
 // sudo cat /sys/kernel/debug/tracing/trace_pipe
 
 #define ERROR_CODE 0xffffffffdeadbeef
 
 #define VMALLOC_FREE_PATH "/proc/vmalloc_free"
 
-#define ___GFP_DMA        0x01u
-#define ___GFP_RECLAIMABLE    0x10u
-#define ___GFP_ACCOUNT        0x400000u
+#define ___GFP_DMA		0x01u
+#define ___GFP_RECLAIMABLE	0x10u
+#define ___GFP_ACCOUNT		0x400000u
+
 
 struct kmem_cache {
     unsigned long    cpu_slab;             /*     0     8 */
@@ -45,10 +47,6 @@ struct kmem_cache {
     /* paddings: 1, sum paddings: 2 */
     /* last cacheline: 24 bytes */
 };
-
-/* Define all your maps and functions here */
-
-char _license[] SEC("license") = "GPL";
 
 
 struct {
@@ -126,9 +124,8 @@ u32 get_zone(u32 gfp_flags)
     return ret;
 }
 
-
 SEC("kprobe/__alloc_file")
-int probe_alloc_start___alloc_file(struct pt_regs *ctx)
+int probe_alloc_start(struct pt_regs *ctx)
 {
     u32 pid = bpf_get_current_pid_tgid();
     u32 val = 1;
@@ -142,7 +139,7 @@ int probe_alloc_start___alloc_file(struct pt_regs *ctx)
 }
 
 SEC("kretprobe/__alloc_file")
-int probe_alloc_end___alloc_file(struct pt_regs *ctx)
+int probe_alloc_end(struct pt_regs *ctx)
 {
     u32 pid = bpf_get_current_pid_tgid();
     int err = 0;
@@ -161,9 +158,8 @@ int probe_alloc_end___alloc_file(struct pt_regs *ctx)
 }
 
 
-
 SEC("kprobe/file_free_rcu")
-int probe_start_file_free_rcu(struct pt_regs *ctx)
+int probe_start(struct pt_regs *ctx)
 {
     u32 pid = bpf_get_current_pid_tgid();
     u32 val = 1;
@@ -177,7 +173,7 @@ int probe_start_file_free_rcu(struct pt_regs *ctx)
 }
 
 SEC("kretprobe/file_free_rcu")
-int probe_end_file_free_rcu(struct pt_regs *ctx)
+int probe_end(struct pt_regs *ctx)
 {
     u32 pid = bpf_get_current_pid_tgid();
     int err = 0;
@@ -192,7 +188,6 @@ int probe_end_file_free_rcu(struct pt_regs *ctx)
     }
     return 0;
 }
-
 
 int allocation(u32 pid)
 {
@@ -439,4 +434,9 @@ int probe_kfree3(struct pt_regs* ctx)
 	return 0;
 }
 
-// ============================================================================
+
+
+
+
+
+char _license[] SEC("license") = "GPL";
