@@ -3,6 +3,7 @@
 1-evaluation/bullseye.id_rsa
 1-evaluation/bullseye.id_rsa.pub
 1-evaluation/bullseye.img
+1-evaluation/vm.pid
 ./2-source-code/llvm-project/*
 /2-source-code/llvm-project/*
 /2-source-code/llvm-project/
