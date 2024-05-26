@@ -12,7 +12,7 @@ sleep 20
 ## copy necessary files
 ./copy2vm ../2-source-code/linux-5.15.106/sample/bpf
 ./copy2vm ../2-source-code/POCs
-./copy2vm ../2-source-code/scripts
+./copy2vm ./scripts
 
 gnome-terminal --title="terminal2: RUN BPF & MONITOR OUTPUT here" -- ./connect2vm.sh
 
