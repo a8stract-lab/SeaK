@@ -21,19 +21,28 @@ values_dict = {dir: {key: [] for key in index} for dir in src_dirs}
 for dir in src_dirs:
     kind = dir.split('/')[0]
     for rt, ds, fs in os.walk(testcases_name + '/' + dir):
-        test_num = len(fs)
+        test_num = 1
         for filename in fs:
-            with open(testcases_name + '/' + dir + '/' + filename, 'r') as file:
-                for line in file:
-                    if len(line.split(':')) > 1:
-                        key = line.split(':')[0]
-                        value = line.split(':')[1]
-                        if key in index:
-                            values_dict[dir][key].append(float(value.split(' ')[1]))
-                            if pd.isna(df.loc[key, kind]):
-                                df.loc[key, kind] = float(value.split(' ')[1])
-                            else:
-                                df.loc[key, kind] += float(value.split(' ')[1])
+            if filename == "result.txt":
+                with open(testcases_name + '/' + dir + '/' + filename, 'r') as file:
+                    print(filename)
+                    i = 0
+                    for line in file:
+                        i = i+1
+                        print(i)
+                        print(line)
+                        if len(line.split(':')) > 1:
+                            key = line.split(':')[0]
+                            value = line.split(':')[1]
+                            if key in index:
+                                values_dict[dir][key].append(float(value.split(' ')[1]))
+                                if pd.isna(df.loc[key, kind]):
+                                    df.loc[key, kind] = float(value.split(' ')[1])
+                                else:
+                                    df.loc[key, kind] += float(value.split(' ')[1])
+                        if i == 8:
+                            print(i)
+                            break
     df.loc[:, kind] = df.loc[:, kind] / test_num
 
 for dir in src_dirs:

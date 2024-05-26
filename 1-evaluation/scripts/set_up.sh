@@ -20,10 +20,10 @@ else
 	mkdir EF_memory_overhead
 fi
 
-if [ -d "Seak_memory_overhead" ]; then
+if [ -d "SeaK_memory_overhead" ]; then
 	:
 else
-	mkdir Seak_memory_overhead
+	mkdir SeaK_memory_overhead
 fi
 
 cd EF_lmbench
@@ -83,13 +83,13 @@ cd ../scripts
 
 cd ..
 
-if [ -d "Seak_phoronix" ]; then
+if [ -d "SeaK_phoronix" ]; then
 	:
 else
-	mkdir Seak_phoronix
+	mkdir SeaK_phoronix
 fi
 
-cd Seak_phoronix
+cd SeaK_phoronix
 if [ -d "vanilla" ]; then
 	:
 else
@@ -129,13 +129,13 @@ cd ../scripts
 
 cd ..
 
-if [ -d "Seak_lmbench" ]; then
+if [ -d "SeaK_lmbench" ]; then
 	:
 else
-	mkdir Seak_lmbench
+	mkdir SeaK_lmbench
 fi
 
-cd Seak_lmbench
+cd SeaK_lmbench
 if [ -d "vanilla" ]; then
 	:
 else

@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 
-testcases_name = "../Seak_lmbench"
+testcases_name = "../SeaK_lmbench"
 src_dirs = ['vanilla', 'l2cap', 'seq', "cred","sk_filter","fdtable","file"]
 index = ['Simple syscall', 'Simple read', 'Simple write', 'Select on 100 fd\'s', 'Signal handler installation', 'Signal handler overhead',  'Process fork+exit', 'Process fork+execve', 'Process fork+/bin/sh -c',  'UDP latency using localhost',  'TCP/IP connection cost to localhost', 'AF_UNIX sock stream bandwidth', 'Pipe bandwidth']
 columns = []
@@ -42,4 +42,4 @@ for dir in src_dirs:
         if kind != "vanilla":
             df.loc[key, kind + "_diff"] = assign_number[key]*(df.loc[key, kind] - df.loc[key, 'vanilla']) / df.loc[key, 'vanilla']
 
-df.to_excel('../Results/Seak_lmbench.xlsx', sheet_name='Sheet1')
+df.to_excel('../Results/SeaK_lmbench.xlsx', sheet_name='Sheet1')

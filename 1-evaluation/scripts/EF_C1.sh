@@ -17,13 +17,12 @@ mv lmbench/results/x86_64-linux-gnu/* EF_lmbench/C1/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../EF_memory_overhead/C1.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../EF_memory_overhead/C1.txt 1001
+echo finished
 cd ..
 
-python3 scripts/phoronix_test.py EF_C1
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/EF_C1/composite.xml EF_phoronix/C1/result.txt
+python3 scripts/phoronix_test.py efc1
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/efc1/composite.xml EF_phoronix/C1/result.txt
 

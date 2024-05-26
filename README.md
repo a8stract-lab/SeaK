@@ -105,7 +105,7 @@ At the beginning we can acknowledge the vulnerability details from the bug repor
 In the exploitation writeup of `CVE-2021-4154` (Thanks to [Zhenpeng Lin](https://github.com/Markakd/CVE-2021-4154))
 
 **both the vulnerable and victim/sensitive oject is `struct file`**.
- 
+
 ### 2. extract the allocation and release sites.
 
 As the KASAN report has already presented the allocation and free sites of `struct file`, there's no need for further efforts to achieve AA for CVE-2021-4154.
@@ -298,6 +298,215 @@ now shut down the left and right terminal to continue.
 
 ## Results Reproduced
 
-To prove the results can be reproduced, we design x experiments.
+To prove the results can be reproduced, we design 2 experiments.
 
 To make the experiments process easier, we provides virtual machines to accelerate the evaluations, but the whole process may still take more than 20 hours.
+
+### 1.overhead of existing features
+
+In our paper, we state that C1 and C2 have little overhead but they fail to protect the kernel heap. C3 is able to protect the kernel heap but its overhead can't be ignored. In this part, we will show how to reproduce the overhead of C1, C2 and C3.
+
+For benchmarks, we will use lmbench and phoronix-test-suite as stated in our paper.
+
+#### 1.1 measure the overhead of vanilla
+
+First, modify the `run.sh` under directory '1-evaluation'.
+
+```shell
+KERNEL=./kernels/bzImage-vanilla
+IMAGE=./bullseye.img
+qemu-system-x86_64 \
+    -m 2G \
+    -smp 2 \
+    -kernel $KERNEL \
+    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
+    -drive file=$IMAGE,format=raw \
+    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
+    -net nic,model=e1000 \
+    -nographic \
+    -pidfile vm.pid \
+    -enable-kvm \
+```
+
+Then execute evaluate.sh and log in the virtual machine.
+
+In the virtual machine, run commands below:
+
+```bash
+cd scripts
+./set_up.sh
+./EF_vanilla.sh
+```
+
+#### 1.2 measure the overhead of C1
+
+First, modify the `run.sh` under directory '1-evaluation'.
+
+```shell
+KERNEL=./kernels/bzImage-C1
+IMAGE=./bullseye.img
+qemu-system-x86_64 \
+    -m 2G \
+    -smp 2 \
+    -kernel $KERNEL \
+    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
+    -drive file=$IMAGE,format=raw \
+    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
+    -net nic,model=e1000 \
+    -nographic \
+    -pidfile vm.pid \
+    -enable-kvm \
+```
+
+Then execute evaluate.sh and log in the virtual machine.
+
+In the virtual machine, run commands below:
+
+```bash
+cd scripts
+./EF_C1.sh
+```
+
+#### 1.3 measure the overhead of C2
+
+First, modify the `run.sh` under directory '1-evaluation'.
+
+```shell
+KERNEL=./kernels/bzImage-C2
+IMAGE=./bullseye.img
+qemu-system-x86_64 \
+    -m 2G \
+    -smp 2 \
+    -kernel $KERNEL \
+    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
+    -drive file=$IMAGE,format=raw \
+    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
+    -net nic,model=e1000 \
+    -nographic \
+    -pidfile vm.pid \
+    -enable-kvm \
+```
+
+Then execute evaluate.sh and log in the virtual machine.
+
+In the virtual machine, run commands below:
+
+```bash
+cd scripts
+./EF_C2.sh
+```
+
+#### 1.4 measure the overhead of vanilla
+
+First, modify the `run.sh` under directory '1-evaluation'.
+
+```shell
+KERNEL=./kernels/bzImage-C3
+IMAGE=./bullseye.img
+qemu-system-x86_64 \
+    -m 2G \
+    -smp 2 \
+    -kernel $KERNEL \
+    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
+    -drive file=$IMAGE,format=raw \
+    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
+    -net nic,model=e1000 \
+    -nographic \
+    -pidfile vm.pid \
+    -enable-kvm \
+```
+
+Then execute evaluate.sh and log in the virtual machine.
+
+In the virtual machine, run commands below:
+
+```bash
+cd scripts
+./EF_C3.sh
+```
+
+#### 1.5 analyze the raw data
+
+run command:
+
+```bash
+./EF_analysis.sh
+```
+
+By executing this command, EF_lmbench.xlsx, EF_phoronix.xlsx and EF_memory_overhead.pdf counld be found under /root/Results.
+
+### 2. overhead of SeaK
+
+In our paper, we state that the overhead SeaK is negligible. In this part, we will show how to reproduce the results of SeaK. Benchmarks are also lmbench and phoronix-test-suite.
+
+#### 2.1 measure the overhead of SeaK
+
+First, modify the `run.sh` under directory '1-evaluation'.
+
+```shell
+KERNEL=./kernels/bzImage-SeaK
+IMAGE=./bullseye.img
+qemu-system-x86_64 \
+    -m 2G \
+    -smp 2 \
+    -kernel $KERNEL \
+    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
+    -drive file=$IMAGE,format=raw \
+    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
+    -net nic,model=e1000 \
+    -nographic \
+    -pidfile vm.pid \
+    -enable-kvm \
+```
+
+Then execute evaluate.sh and log in the virtual machine.
+
+In the virtual machine, run commands below (this command will take at least 12 hours):
+
+```bash
+cd scripts
+./SeaK.sh
+```
+
+#### 2.2 analyze the raw data
+
+run command:
+
+```bash
+./SeaK_analysis.sh
+```
+
+By executing this command, SeaK_lmbench.xlsx, SeaK_phoronix.xlsx and SeaK_memory_overhead.pdf could be found under /root/Results.
+
+
+
+### 3.How to view the results
+
+The virtual machine does not support pdf and xlsx. So you can use ssh to transit the results to the host machine.
+
+Run commands like this:
+
+```bash
+scp -r /root/Results hostname@hostip:/path/to/host/directory
+```
+
+For the pdf files of memory overhead, you may find the graphs are too small or too big. You can modify the parameters 'length' and 'height' in EF_memory_overhead.py and SeaK_memory_overhead.py.
+
+```python
+...
+import numpy as np
+import os
+files_path = "../SeaK_memory_overhead/"
+length = 1000 # you can modify the length of the graph
+height = 1300 # you can modify the height of the graph
+duration_time = (1,length)
+kernel_kinds = ["vanilla","l2cap","seq","merged","file","64AAs"]
+#kernel_kinds = ["vanilla","freelist","kfence","slub"]
+index = 0
+apache = [15,-20,-25,15]
+lmbench = [15,-15,-20,5]
+dis = lmbench
+...
+```
+
+After modifying the python file, run `python3 EF_memory_overhead.py` or `python3 SeaK_memory_overhead.py` to regenerate the pdf files with proper size.

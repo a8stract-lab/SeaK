@@ -14,19 +14,18 @@ make rerun
 make rerun
 make rerun
 cd ..
-mv lmbench/results/x86_64-linux-gnu/* Seak_lmbench/vanilla/
+mv lmbench/results/x86_64-linux-gnu/* SeaK_lmbench/vanilla/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../Seak_memory_overhead/vanilla.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/vanilla.txt 1001
+echo finished
 cd ..
 
-python3 scripts/phoronix_test.py Seak_vanilla
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/Seak_vanilla/composite.xml Seak_phoronix/vanilla/result.txt
+python3 scripts/phoronix_test.py seakvanilla
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakvanilla/composite.xml SeaK_phoronix/vanilla/result.txt
 
 
 echo start_l2cap
@@ -45,23 +44,22 @@ make rerun
 make rerun
 make rerun
 cd ..
-mv lmbench/results/x86_64-linux-gnu/* Seak_lmbench/l2cap/
+mv lmbench/results/x86_64-linux-gnu/* SeaK_lmbench/l2cap/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../Seak_memory_overhead/l2cap.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/l2cap.txt 1001
+echo finished
 cd ..
-kill $BPF_l2cap
+kill -SIGINT $BPF_l2cap
 
 ./bpf/hotbpf_uaf_l2cap_chan_close &
 BPF_l2cap=$!
-python3 scripts/phoronix_test.py Seak_l2cap
-kill $BPF_l2cap
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/Seak_l2cap/composite.xml Seak_phoronix/l2cap/result.txt
+python3 scripts/phoronix_test.py seakl2cap
+kill -SIGINT $BPF_l2cap
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakl2cap/composite.xml SeaK_phoronix/l2cap/result.txt
 
 
 echo start_seq
@@ -80,23 +78,22 @@ make rerun
 make rerun
 make rerun
 cd ..
-mv lmbench/results/x86_64-linux-gnu/* Seak_lmbench/seq/
+mv lmbench/results/x86_64-linux-gnu/* SeaK_lmbench/seq/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../Seak_memory_overhead/seq.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/seq.txt 1001
+echo finished
 cd ..
-kill $BPF_seq
+kill -SIGINT $BPF_seq
 
 ./bpf/hotbpf_seq &
 BPF_seq=$!
-python3 scripts/phoronix_test.py Seak_seq
-kill $BPF_seq
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/Seak_seq/composite.xml Seak_phoronix/seq/result.txt
+python3 scripts/phoronix_test.py seakseq
+kill -SIGINT $BPF_seq
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakseq/composite.xml SeaK_phoronix/seq/result.txt
 
 
 echo start_cred
@@ -116,23 +113,22 @@ make rerun
 make rerun
 make rerun
 cd ..
-mv lmbench/results/x86_64-linux-gnu/* Seak_lmbench/cred/
+mv lmbench/results/x86_64-linux-gnu/* SeaK_lmbench/cred/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../Seak_memory_overhead/cred.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/cred.txt 1001
+echo finished
 cd ..
-kill $BPF_cred
+kill -SIGINT $BPF_cred
 
 ./bpf/hotbpf_cred &
 BPF_cred=$!
-python3 scripts/phoronix_test.py Seak_cred
-kill $BPF_cred
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/Seak_cred/composite.xml Seak_phoronix/cred/result.txt
+python3 scripts/phoronix_test.py seakcred
+kill -SIGINT $BPF_cred
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakcred/composite.xml SeaK_phoronix/cred/result.txt
 
 
 echo start_sk_filter
@@ -151,23 +147,22 @@ make rerun
 make rerun
 make rerun
 cd ..
-mv lmbench/results/x86_64-linux-gnu/* Seak_lmbench/sk_filter/
+mv lmbench/results/x86_64-linux-gnu/* SeaK_lmbench/sk_filter/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../Seak_memory_overhead/sk_filter.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/sk_filter.txt 1001
+echo finished
 cd ..
-kill $BPF_sk_filter
+kill -SIGINT $BPF_sk_filter
 
 ./bpf/hotbpf_sk_filter &
 BPF_sk_filter=$!
-python3 scripts/phoronix_test.py Seak_sk_filter
-kill $BPF_sk_filter
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/Seak_sk_filter/composite.xml Seak_phoronix/sk_filter/result.txt
+python3 scripts/phoronix_test.py seakskfilter
+kill -SIGINT $BPF_sk_filter
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakskfilter/composite.xml SeaK_phoronix/sk_filter/result.txt
 
 
 echo start_fdtable
@@ -186,23 +181,22 @@ make rerun
 make rerun
 make rerun
 cd ..
-mv lmbench/results/x86_64-linux-gnu/* Seak_lmbench/fdtable/
+mv lmbench/results/x86_64-linux-gnu/* SeaK_lmbench/fdtable/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../Seak_memory_overhead/fdtable.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/fdtable.txt 1001
+echo finished
 cd ..
-kill $BPF_fdtable
+kill -SIGINT $BPF_fdtable
 
 ./bpf/hotbpf_fdtable &
 BPF_fdtable=$!
-python3 scripts/phoronix_test.py Seak_fdtable
-kill $BPF_fdtable
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/Seak_fdtable/composite.xml Seak_phoronix/fdtable/result.txt
+python3 scripts/phoronix_test.py seakfdtable
+kill -SIGINT $BPF_fdtable
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakfdtable/composite.xml SeaK_phoronix/fdtable/result.txt
 
 
 echo start_file
@@ -221,21 +215,29 @@ make rerun
 make rerun
 make rerun
 cd ..
-mv lmbench/results/x86_64-linux-gnu/* Seak_lmbench/file/
+mv lmbench/results/x86_64-linux-gnu/* SeaK_lmbench/file/
 
 cd lmbench
 
-python3 ../scripts/memory_overhead.py ../Seak_memory_overhead/file.txt &
-MEMORY_PID=$!
-make rerun
-sleep 1200
-kill $MEMORY_PID
+cd ../lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/file.txt 1001
+echo finished
 cd ..
-kill $BPF_file
+kill -SIGINT $BPF_file
 
 ./bpf/hotbpf_file &
 BPF_file=$!
-python3 scripts/phoronix_test.py Seak_file
-kill $BPF_file
-python3 scripts/phronix_parse.py /var/lib/phoronix-test-suite/test-results/Seak_file/composite.xml Seak_phoronix/file/result.txt
+python3 scripts/phoronix_test.py seakfile
+kill -SIGINT $BPF_file
+python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakfile/composite.xml SeaK_phoronix/file/result.txt
 
+
+./bpf/hotbpf_38_tests &
+BPF_38_tests=$!
+cd lmbench
+make rerun &
+python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/64AAs.txt 1001
+echo finished
+cd ..
+kill SIGINT $BPF_38_tests
