@@ -10,7 +10,6 @@ gnome-terminal --title="terminal1: RUN VM & POC here"  -- ./run.sh
 sleep 20
 
 ## copy necessary files
-./copy2vm ../2-source-code/linux-5.15.106/sample/bpf
 ./copy2vm ../2-source-code/POCs
 ./copy2vm ./scripts
 
