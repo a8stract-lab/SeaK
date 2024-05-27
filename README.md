@@ -333,10 +333,14 @@ Then execute evaluate.sh and log in the virtual machine.
 In the virtual machine, run commands below:
 
 ```bash
-cd scripts
-./set_up.sh
-./EF_vanilla.sh
+root@vm$ cd scripts
+root@vm$ ./set_up.sh
+root@vm$ ./EF_vanilla.sh
 ```
+
+After setup，make sure there are these directories under /root
+
+![setup](/Users/mullywang/Desktop/SeaK/figs/setup.png)
 
 #### 1.2 measure the overhead of C1
 
@@ -363,8 +367,8 @@ Then execute evaluate.sh and log in the virtual machine.
 In the virtual machine, run commands below:
 
 ```bash
-cd scripts
-./EF_C1.sh
+root@vm$ cd scripts
+root@vm$ ./EF_C1.sh
 ```
 
 #### 1.3 measure the overhead of C2
@@ -392,8 +396,8 @@ Then execute evaluate.sh and log in the virtual machine.
 In the virtual machine, run commands below:
 
 ```bash
-cd scripts
-./EF_C2.sh
+root@vm$ cd scripts
+root@vm$ ./EF_C2.sh
 ```
 
 #### 1.4 measure the overhead of vanilla
@@ -421,8 +425,8 @@ Then execute evaluate.sh and log in the virtual machine.
 In the virtual machine, run commands below:
 
 ```bash
-cd scripts
-./EF_C3.sh
+root@vm$ cd scripts
+root@vm$ ./EF_C3.sh
 ```
 
 #### 1.5 analyze the raw data
@@ -430,7 +434,7 @@ cd scripts
 run command:
 
 ```bash
-./EF_analysis.sh
+root@vm$ ./EF_analysis.sh
 ```
 
 By executing this command, EF_lmbench.xlsx, EF_phoronix.xlsx and EF_memory_overhead.pdf counld be found under /root/Results.
@@ -464,8 +468,8 @@ Then execute evaluate.sh and log in the virtual machine.
 In the virtual machine, run commands below (this command will take at least 12 hours):
 
 ```bash
-cd scripts
-./SeaK.sh
+root@vm$ cd scripts
+root@vm$ ./SeaK.sh
 ```
 
 #### 2.2 analyze the raw data
@@ -473,7 +477,7 @@ cd scripts
 run command:
 
 ```bash
-./SeaK_analysis.sh
+root@vm$ ./SeaK_analysis.sh
 ```
 
 By executing this command, SeaK_lmbench.xlsx, SeaK_phoronix.xlsx and SeaK_memory_overhead.pdf could be found under /root/Results.
@@ -487,26 +491,11 @@ The virtual machine does not support pdf and xlsx. So you can use ssh to transit
 Run commands like this:
 
 ```bash
-scp -r /root/Results hostname@hostip:/path/to/host/directory
+root@vm$ scp -r /root/Results hostname@hostip:/path/to/host/directory
 ```
 
 For the pdf files of memory overhead, you may find the graphs are too small or too big. You can modify the parameters 'length' and 'height' in EF_memory_overhead.py and SeaK_memory_overhead.py.
 
-```python
-...
-import numpy as np
-import os
-files_path = "../SeaK_memory_overhead/"
-length = 1000 # you can modify the length of the graph
-height = 1300 # you can modify the height of the graph
-duration_time = (1,length)
-kernel_kinds = ["vanilla","l2cap","seq","merged","file","64AAs"]
-#kernel_kinds = ["vanilla","freelist","kfence","slub"]
-index = 0
-apache = [15,-20,-25,15]
-lmbench = [15,-15,-20,5]
-dis = lmbench
-...
-```
+![size](/Users/mullywang/Desktop/SeaK/figs/size.png)
 
 After modifying the python file, run `python3 EF_memory_overhead.py` or `python3 SeaK_memory_overhead.py` to regenerate the pdf files with proper size.
