@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 files_path = "../EF_memory_overhead/"
-duration_time = (1,1000)
+length = 1000
+height = 1700
+duration_time = (1,length)
 kernel_kinds = ["vanilla","C1","C2","C3"]
 #kernel_kinds = ["vanilla","freelist","kfence","slub"]
 index = 0
@@ -90,7 +92,7 @@ for rt,ds,fs in os.walk(files_path):
     #              ha='center',
     #              arrowprops=dict(facecolor='black', arrowstyle='->'))
 plt.xlim(0, max(x))
-plt.ylim(0,1700)
+plt.ylim(0,height)
 plt.xlabel('Time Elapsed (s)', fontsize=11, color='black')
 plt.ylabel('MBytes',rotation=0, labelpad=10, fontsize=11, color='black')
 ax = plt.gca()

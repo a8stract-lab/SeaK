@@ -4,9 +4,11 @@ plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 import numpy as np
 import os
-files_path = "memusage/lmbench-hotbpf2/"
-duration_time = (1,1000)
-kernel_kinds = ["vanilla","l2cap","seq","merged","file2","64AAs"]
+files_path = "../SeaK_memory_overhead/"
+length = 1000
+height = 1300
+duration_time = (1,length)
+kernel_kinds = ["vanilla","l2cap","seq","merged","file","64AAs"]
 #kernel_kinds = ["vanilla","freelist","kfence","slub"]
 index = 0
 apache = [15,-20,-25,15]
@@ -101,14 +103,13 @@ for rt,ds,fs in os.walk(files_path):
     plt.scatter(max_idx_y6+1,max(kernels[kernel_kinds[5]]) , color='black', s=20,zorder=3)
     plt.plot([min(x), max_idx_y6], [max(kernels[kernel_kinds[5]]), max(kernels[kernel_kinds[5]])], '--k',lw = 1)
 plt.xlim(0, max(x))
-plt.ylim(0,1300)
+plt.ylim(0,height)
 plt.xlabel('Time Elapsed (s)', fontsize=11, color='black')
 plt.ylabel('MBytes',rotation=0, labelpad=10, fontsize=11, color='black')
 ax = plt.gca()
 # 调整标签位置
 ax.yaxis.set_label_coords(-0.05,1.06)
 ax.yaxis.get_label().set_verticalalignment('top')
-plt.legend(loc='lower left',fontsize=11)
+plt.legend(loc='upper left',fontsize=11)
 #plt.title("lmbench")
-plt.savefig('memory_usage lmbench hotbpf.pdf',dpi=1000,bbox_inches='tight')
-plt.show()
+plt.savefig('../Results/SeaK_memory_overhead.pdf',dpi=1000,bbox_inches='tight')

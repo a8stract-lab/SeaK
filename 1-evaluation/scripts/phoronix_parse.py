@@ -30,7 +30,10 @@ def main(argv):
     print(benchmark_maps)
     with open(argv[2],"w") as file:
         for key in benchmark_maps:
-            file.write(key+":"+benchmark_maps[key][benchmark_maps_choose_value[key]-1]+"\n")
+            if key != "Apache HTTP Server":
+                file.write(key+": "+benchmark_maps[key][benchmark_maps_choose_value[key]-1]+"\n")
+            if key == "Apache HTTP Server":
+                file.write(key+": "+benchmark_maps[key][benchmark_maps_choose_value[key]-1])
 
 if __name__ == "__main__":
     main(sys.argv)

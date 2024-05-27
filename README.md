@@ -105,7 +105,7 @@ At the beginning we can acknowledge the vulnerability details from the bug repor
 In the exploitation writeup of `CVE-2021-4154` (Thanks to [Zhenpeng Lin](https://github.com/Markakd/CVE-2021-4154))
 
 **both the vulnerable and victim/sensitive oject is `struct file`**.
- 
+
 ### 2. extract the allocation and release sites.
 
 As the KASAN report has already presented the allocation and free sites of `struct file`, there's no need for further efforts to achieve AA for CVE-2021-4154.
@@ -298,6 +298,140 @@ now shut down the left and right terminal to continue.
 
 ## Results Reproduced
 
-To prove the results can be reproduced, we design x experiments.
+To prove the results can be reproduced, we design 2 experiments.
 
 To make the experiments process easier, we provides virtual machines to accelerate the evaluations, but the whole process may still take more than 20 hours.
+
+### 1.overhead of existing features
+
+In our paper, we state that C1 and C2 have little overhead but they fail to protect the kernel heap. C3 is able to protect the kernel heap but its overhead can't be ignored. In this part, we will show how to reproduce the overhead of C1, C2 and C3.
+
+For benchmarks, we will use lmbench and phoronix-test-suite as stated in our paper.
+
+#### 1.1 measure the overhead of vanilla
+
+Then execute evaluate-vanilla.sh and log in the virtual machine.
+
+```bash
+host$ ./evaluate-vanilla.sh
+```
+
+In the virtual machine, run commands below:
+
+```bash
+root@vm$ cd scripts
+root@vm$ ./set_up.sh
+root@vm$ ./EF_vanilla.sh
+```
+
+After setup，make sure there are these directories under /root
+
+![setup](./figs/setup.png)
+
+#### 1.2 measure the overhead of C1
+
+First, execute evaluate-C1.sh and log in the virtual machine.
+
+```bash
+host$ ./evaluate-C1.sh
+```
+
+In the virtual machine, run commands below:
+
+```bash
+root@vm$ cd scripts
+root@vm$ ./EF_C1.sh
+```
+
+#### 1.3 measure the overhead of C2
+
+First, execute evaluate-C2.sh and log in the virtual machine.
+
+```bash
+host$ ./evaluate-C2.sh
+```
+
+In the virtual machine, run commands below:
+
+```bash
+root@vm$ cd scripts
+root@vm$ ./EF_C2.sh
+```
+
+#### 1.4 measure the overhead of C3
+
+First, execute evaluate-C3.sh and log in the virtual machine.
+
+```bash
+host$ ./evaluate-C3.sh
+```
+
+In the virtual machine, run commands below:
+
+```bash
+root@vm$ cd scripts
+root@vm$ ./EF_C3.sh
+```
+
+#### 1.5 analyze the raw data
+
+run command:
+
+```bash
+root@vm$ ./EF_analysis.sh
+```
+
+By executing this command, EF_lmbench.xlsx, EF_phoronix.xlsx and EF_memory_overhead.pdf counld be found under /root/Results.
+
+### 2. overhead of SeaK
+
+In our paper, we state that the overhead SeaK is negligible. In this part, we will show how to reproduce the results of SeaK. Benchmarks are also lmbench and phoronix-test-suite.
+
+#### 2.1 measure the overhead of SeaK
+
+First, execute evaluate-SeaK.sh and log in the virtual machine.
+
+```bash
+host$ ./evaluate-SeaK.sh
+```
+
+In the virtual machine, run commands below (this command will take at least 12 hours):
+
+```bash
+root@vm$ cd scripts
+root@vm$ ./SeaK.sh
+```
+
+#### 2.2 analyze the raw data
+
+run command:
+
+```bash
+root@vm$ ./SeaK_analysis.sh
+```
+
+By executing this command, SeaK_lmbench.xlsx, SeaK_phoronix.xlsx and SeaK_memory_overhead.pdf could be found under /root/Results.
+
+
+
+### 3.How to view the results
+
+The virtual machine does not support pdf and xlsx. So you can use ssh to transit the results to the host machine.
+
+First, get the hostip of your machine:
+
+```bash
+host$ ifconfig
+```
+
+Run commands like this:
+
+```bash
+root@vm$ scp -r /root/Results hostname@hostip:/path/to/host/directory
+```
+
+For the pdf files of memory overhead, you may find the graphs are too small or too big. You can modify the parameters 'length' and 'height' in EF_memory_overhead.py and SeaK_memory_overhead.py.
+
+![size](./figs/size.png)
+
+After modifying the python file, run `python3 EF_memory_overhead.py` or `python3 SeaK_memory_overhead.py` to regenerate the pdf files with proper size.

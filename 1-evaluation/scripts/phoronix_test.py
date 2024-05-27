@@ -34,8 +34,8 @@ def main(argv):
         print("enter description")
         child.expect("Sockperf")
         print("successfully run")
-        expect_sendline(child, "view the results", "n",10000)
-        expect_sendline(child, "upload the results", "n")
+        expect_sendline(child, "you want to view", "n",10000)
+        expect_sendline(child, "upload", "n")
         print("finished")
     finally :
         print(child.before.decode())
