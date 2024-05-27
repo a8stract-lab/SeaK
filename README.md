@@ -312,7 +312,7 @@ For benchmarks, we will use lmbench and phoronix-test-suite as stated in our pap
 
 First, modify the `run.sh` under directory '1-evaluation'.
 
-```shell
+```bash
 KERNEL=./kernels/bzImage-vanilla
 IMAGE=./bullseye.img
 qemu-system-x86_64 \
@@ -342,7 +342,7 @@ cd scripts
 
 First, modify the `run.sh` under directory '1-evaluation'.
 
-```shell
+```bash
 KERNEL=./kernels/bzImage-C1
 IMAGE=./bullseye.img
 qemu-system-x86_64 \
@@ -371,7 +371,7 @@ cd scripts
 
 First, modify the `run.sh` under directory '1-evaluation'.
 
-```shell
+```bash
 KERNEL=./kernels/bzImage-C2
 IMAGE=./bullseye.img
 qemu-system-x86_64 \
@@ -400,7 +400,7 @@ cd scripts
 
 First, modify the `run.sh` under directory '1-evaluation'.
 
-```shell
+```bash
 KERNEL=./kernels/bzImage-C3
 IMAGE=./bullseye.img
 qemu-system-x86_64 \
@@ -443,7 +443,7 @@ In our paper, we state that the overhead SeaK is negligible. In this part, we wi
 
 First, modify the `run.sh` under directory '1-evaluation'.
 
-```shell
+```bash
 KERNEL=./kernels/bzImage-SeaK
 IMAGE=./bullseye.img
 qemu-system-x86_64 \
