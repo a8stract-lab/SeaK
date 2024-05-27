@@ -312,6 +312,10 @@ For benchmarks, we will use lmbench and phoronix-test-suite as stated in our pap
 
 Then execute evaluate-vanilla.sh and log in the virtual machine.
 
+```bash
+host$ ./evaluate-vanilla.sh
+```
+
 In the virtual machine, run commands below:
 
 ```bash
@@ -328,6 +332,10 @@ After setup，make sure there are these directories under /root
 
 First, execute evaluate-C1.sh and log in the virtual machine.
 
+```bash
+host$ ./evaluate-C1.sh
+```
+
 In the virtual machine, run commands below:
 
 ```bash
@@ -339,6 +347,10 @@ root@vm$ ./EF_C1.sh
 
 First, execute evaluate-C2.sh and log in the virtual machine.
 
+```bash
+host$ ./evaluate-C2.sh
+```
+
 In the virtual machine, run commands below:
 
 ```bash
@@ -349,6 +361,10 @@ root@vm$ ./EF_C2.sh
 #### 1.4 measure the overhead of C3
 
 First, execute evaluate-C3.sh and log in the virtual machine.
+
+```bash
+host$ ./evaluate-C3.sh
+```
 
 In the virtual machine, run commands below:
 
@@ -374,6 +390,10 @@ In our paper, we state that the overhead SeaK is negligible. In this part, we wi
 #### 2.1 measure the overhead of SeaK
 
 First, execute evaluate-SeaK.sh and log in the virtual machine.
+
+```bash
+host$ ./evaluate-SeaK.sh
+```
 
 In the virtual machine, run commands below (this command will take at least 12 hours):
 
