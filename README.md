@@ -310,25 +310,7 @@ For benchmarks, we will use lmbench and phoronix-test-suite as stated in our pap
 
 #### 1.1 measure the overhead of vanilla
 
-First, modify the `run.sh` under directory '1-evaluation'.
-
-```bash
-KERNEL=./kernels/bzImage-vanilla
-IMAGE=./bullseye.img
-qemu-system-x86_64 \
-    -m 2G \
-    -smp 2 \
-    -kernel $KERNEL \
-    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
-    -drive file=$IMAGE,format=raw \
-    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
-    -net nic,model=e1000 \
-    -nographic \
-    -pidfile vm.pid \
-    -enable-kvm \
-```
-
-Then execute evaluate.sh and log in the virtual machine.
+Then execute evaluate-vanilla.sh and log in the virtual machine.
 
 In the virtual machine, run commands below:
 
@@ -344,25 +326,7 @@ After setup，make sure there are these directories under /root
 
 #### 1.2 measure the overhead of C1
 
-First, modify the `run.sh` under directory '1-evaluation'.
-
-```bash
-KERNEL=./kernels/bzImage-C1
-IMAGE=./bullseye.img
-qemu-system-x86_64 \
-    -m 2G \
-    -smp 2 \
-    -kernel $KERNEL \
-    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
-    -drive file=$IMAGE,format=raw \
-    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
-    -net nic,model=e1000 \
-    -nographic \
-    -pidfile vm.pid \
-    -enable-kvm \
-```
-
-Then execute evaluate.sh and log in the virtual machine.
+First, execute evaluate-C1.sh and log in the virtual machine.
 
 In the virtual machine, run commands below:
 
@@ -373,25 +337,7 @@ root@vm$ ./EF_C1.sh
 
 #### 1.3 measure the overhead of C2
 
-First, modify the `run.sh` under directory '1-evaluation'.
-
-```bash
-KERNEL=./kernels/bzImage-C2
-IMAGE=./bullseye.img
-qemu-system-x86_64 \
-    -m 2G \
-    -smp 2 \
-    -kernel $KERNEL \
-    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
-    -drive file=$IMAGE,format=raw \
-    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
-    -net nic,model=e1000 \
-    -nographic \
-    -pidfile vm.pid \
-    -enable-kvm \
-```
-
-Then execute evaluate.sh and log in the virtual machine.
+First, execute evaluate-C2.sh and log in the virtual machine.
 
 In the virtual machine, run commands below:
 
@@ -400,27 +346,9 @@ root@vm$ cd scripts
 root@vm$ ./EF_C2.sh
 ```
 
-#### 1.4 measure the overhead of vanilla
+#### 1.4 measure the overhead of C3
 
-First, modify the `run.sh` under directory '1-evaluation'.
-
-```bash
-KERNEL=./kernels/bzImage-C3
-IMAGE=./bullseye.img
-qemu-system-x86_64 \
-    -m 2G \
-    -smp 2 \
-    -kernel $KERNEL \
-    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
-    -drive file=$IMAGE,format=raw \
-    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
-    -net nic,model=e1000 \
-    -nographic \
-    -pidfile vm.pid \
-    -enable-kvm \
-```
-
-Then execute evaluate.sh and log in the virtual machine.
+First, execute evaluate-C3.sh and log in the virtual machine.
 
 In the virtual machine, run commands below:
 
@@ -445,25 +373,7 @@ In our paper, we state that the overhead SeaK is negligible. In this part, we wi
 
 #### 2.1 measure the overhead of SeaK
 
-First, modify the `run.sh` under directory '1-evaluation'.
-
-```bash
-KERNEL=./kernels/bzImage-SeaK
-IMAGE=./bullseye.img
-qemu-system-x86_64 \
-    -m 2G \
-    -smp 2 \
-    -kernel $KERNEL \
-    -append "nokaslr console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
-    -drive file=$IMAGE,format=raw \
-    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
-    -net nic,model=e1000 \
-    -nographic \
-    -pidfile vm.pid \
-    -enable-kvm \
-```
-
-Then execute evaluate.sh and log in the virtual machine.
+First, execute evaluate-SeaK.sh and log in the virtual machine.
 
 In the virtual machine, run commands below (this command will take at least 12 hours):
 
@@ -487,6 +397,12 @@ By executing this command, SeaK_lmbench.xlsx, SeaK_phoronix.xlsx and SeaK_memory
 ### 3.How to view the results
 
 The virtual machine does not support pdf and xlsx. So you can use ssh to transit the results to the host machine.
+
+First, get the hostip of your machine:
+
+```bash
+host$ ifconfig
+```
 
 Run commands like this:
 
