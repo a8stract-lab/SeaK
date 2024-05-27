@@ -340,7 +340,7 @@ root@vm$ ./EF_vanilla.sh
 
 After setup，make sure there are these directories under /root
 
-![setup](/Users/mullywang/Desktop/SeaK/figs/setup.png)
+![setup](./figs/setup.png)
 
 #### 1.2 measure the overhead of C1
 
@@ -496,6 +496,6 @@ root@vm$ scp -r /root/Results hostname@hostip:/path/to/host/directory
 
 For the pdf files of memory overhead, you may find the graphs are too small or too big. You can modify the parameters 'length' and 'height' in EF_memory_overhead.py and SeaK_memory_overhead.py.
 
-![size](/Users/mullywang/Desktop/SeaK/figs/size.png)
+![size](./figs/size.png)
 
 After modifying the python file, run `python3 EF_memory_overhead.py` or `python3 SeaK_memory_overhead.py` to regenerate the pdf files with proper size.
