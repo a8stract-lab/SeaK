@@ -2,7 +2,7 @@
 
 # create image
 #./create-image.sh
-
+chmod +x *.sh
 unzip kernels.zip
 
 gnome-terminal --title="terminal1: RUN VM & POC here"  -- ./run-vanilla.sh 
