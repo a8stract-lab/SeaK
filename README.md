@@ -319,7 +319,10 @@ host$ ./evaluate-vanilla.sh
 In the virtual machine, run commands below:
 
 ```bash
+# make sure everything is up-to-date
+root@vm$ phoronix-test-suite install sqlite-speedtest apache osbench ffmpeg sockperf compress-7zip openssl redis
 root@vm$ cd scripts
+#some basic setups
 root@vm$ ./set_up.sh
 root@vm$ ./EF_vanilla.sh
 ```
