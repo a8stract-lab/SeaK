@@ -7,3 +7,5 @@
 ./2-source-code/llvm-project/*
 /2-source-code/llvm-project/*
 /2-source-code/llvm-project/
+.DS_Store
+1-evaluation/.DS_Store
