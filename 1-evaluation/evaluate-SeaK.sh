@@ -2,9 +2,6 @@
 
 # create image
 #./create-image.sh
-sudo rm -r lmbench
-
-unzip lmbench.zip
 
 gnome-terminal --title="terminal1: RUN VM & POC here"  -- ./run-SeaK.sh 
 sleep 20
