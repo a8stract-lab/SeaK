@@ -2,9 +2,8 @@
 
 # create image
 #./create-image.sh
-sudo rm -r lmbench
 
-unzip lmbench.zip
+unzip kernels.zip
 
 gnome-terminal --title="terminal1: RUN VM & POC here"  -- ./run-vanilla.sh 
 sleep 20
