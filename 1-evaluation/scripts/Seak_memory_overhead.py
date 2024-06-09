@@ -5,8 +5,8 @@ plt.rcParams["ps.fonttype"] = 42
 import numpy as np
 import os
 files_path = "../SeaK_memory_overhead/"
-length = 1000
-height = 1300
+length = 1000 #change the length of the pdf
+height = 1300 #change the height of the pdf
 duration_time = (1,length)
 kernel_kinds = ["vanilla","l2cap","seq","merged","file","64AAs"]
 #kernel_kinds = ["vanilla","freelist","kfence","slub"]

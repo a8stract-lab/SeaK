@@ -35,7 +35,7 @@ else
 	:
 fi
 tar -xvf lmbench.tar.gz
-./bpf-evalution/hotbpf_uaf_l2cap_chan_close &
+./bpf/hotbpf_uaf_l2cap_chan_close &
 BPF_l2cap=$!
 cd lmbench
 make rerun
@@ -55,7 +55,7 @@ echo finished
 cd ..
 kill -SIGINT $BPF_l2cap
 
-./bpf-evalution/hotbpf_uaf_l2cap_chan_close &
+./bpf/hotbpf_uaf_l2cap_chan_close &
 BPF_l2cap=$!
 python3 scripts/phoronix_test.py seakl2cap
 kill -SIGINT $BPF_l2cap
@@ -69,7 +69,7 @@ else
 	:
 fi
 tar -xvf lmbench.tar.gz
-./bpf-evalution/hotbpf_seq &
+./bpf/hotbpf_seq &
 BPF_seq=$!
 cd lmbench
 make rerun
@@ -89,7 +89,7 @@ echo finished
 cd ..
 kill -SIGINT $BPF_seq
 
-./bpf-evalution/hotbpf_seq &
+./bpf/hotbpf_seq &
 BPF_seq=$!
 python3 scripts/phoronix_test.py seakseq
 kill -SIGINT $BPF_seq
@@ -104,7 +104,7 @@ else
 fi
 
 tar -xvf lmbench.tar.gz
-./bpf-evalution/hotbpf_cred &
+./bpf/hotbpf_cred &
 BPF_cred=$!
 cd lmbench
 make rerun
@@ -124,7 +124,7 @@ echo finished
 cd ..
 kill -SIGINT $BPF_cred
 
-./bpf-evalution/hotbpf_cred &
+./bpf/hotbpf_cred &
 BPF_cred=$!
 python3 scripts/phoronix_test.py seakcred
 kill -SIGINT $BPF_cred
@@ -138,7 +138,7 @@ else
 	:
 fi
 tar -xvf lmbench.tar.gz
-./bpf-evalution/hotbpf_sk_filter &
+./bpf/hotbpf_sk_filter &
 BPF_sk_filter=$!
 cd lmbench
 make rerun
@@ -158,7 +158,7 @@ echo finished
 cd ..
 kill -SIGINT $BPF_sk_filter
 
-./bpf-evalution/hotbpf_sk_filter &
+./bpf/hotbpf_sk_filter &
 BPF_sk_filter=$!
 python3 scripts/phoronix_test.py seakskfilter
 kill -SIGINT $BPF_sk_filter
@@ -172,7 +172,7 @@ else
 	:
 fi
 tar -xvf lmbench.tar.gz
-./bpf-evalution/hotbpf_fdtable &
+./bpf/hotbpf_fdtable &
 BPF_fdtable=$!
 cd lmbench
 make rerun
@@ -192,7 +192,7 @@ echo finished
 cd ..
 kill -SIGINT $BPF_fdtable
 
-./bpf-evalution/hotbpf_fdtable &
+./bpf/hotbpf_fdtable &
 BPF_fdtable=$!
 python3 scripts/phoronix_test.py seakfdtable
 kill -SIGINT $BPF_fdtable
@@ -206,7 +206,7 @@ else
 	:
 fi
 tar -xvf lmbench.tar.gz
-./bpf-evalution/hotbpf_file &
+./bpf/hotbpf_file &
 BPF_file=$!
 cd lmbench
 make rerun
@@ -226,14 +226,14 @@ echo finished
 cd ..
 kill -SIGINT $BPF_file
 
-./bpf-evalution/hotbpf_file &
+./bpf/hotbpf_file &
 BPF_file=$!
 python3 scripts/phoronix_test.py seakfile
 kill -SIGINT $BPF_file
 python3 scripts/phoronix_parse.py /var/lib/phoronix-test-suite/test-results/seakfile/composite.xml SeaK_phoronix/file/result.txt
 
 
-./bpf-evalution/hotbpf_38_tests &
+./bpf/hotbpf_38_tests &
 BPF_38_tests=$!
 cd lmbench
 make rerun &
