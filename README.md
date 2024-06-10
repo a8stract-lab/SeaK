@@ -319,7 +319,7 @@ host$ ./evaluate-vanilla.sh
 In the virtual machine, run commands below:
 
 ```bash
-# easy for you to view the command
+# easy for you to view the command and output
 root@vm$ screen
 # make sure everything is up-to-date
 root@vm$ phoronix-test-suite install sqlite-speedtest apache osbench ffmpeg sockperf compress-7zip openssl redis
@@ -344,7 +344,7 @@ host$ ./evaluate-C1.sh
 In the virtual machine, run commands below:
 
 ```bash
-# easy for you to view the command
+# easy for you to view the command and output
 root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./EF_C1.sh
@@ -361,7 +361,7 @@ host$ ./evaluate-C2.sh
 In the virtual machine, run commands below:
 
 ```bash
-# easy for you to view the command
+# easy for you to view the command and output
 root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./EF_C2.sh
@@ -378,7 +378,7 @@ host$ ./evaluate-C3.sh
 In the virtual machine, run commands below:
 
 ```bash
-# easy for you to view the command
+# easy for you to view the command and output
 root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./EF_C3.sh
@@ -409,7 +409,7 @@ host$ ./evaluate-SeaK.sh
 In the virtual machine, run commands below (this command will take at least 12 hours):
 
 ```bash
-# easy for you to view the command
+# easy for you to view the command and output
 root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./SeaK.sh
