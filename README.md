@@ -319,6 +319,8 @@ host$ ./evaluate-vanilla.sh
 In the virtual machine, run commands below:
 
 ```bash
+# easy for you to view the command
+root@vm$ screen
 # make sure everything is up-to-date
 root@vm$ phoronix-test-suite install sqlite-speedtest apache osbench ffmpeg sockperf compress-7zip openssl redis
 root@vm$ cd scripts
@@ -333,7 +335,7 @@ After setup，make sure there are these directories under /root
 
 #### 1.2 measure the overhead of C1
 
-First, execute evaluate-C1.sh and log in the virtual machine.
+First, close the virtual machine and execute evaluate-C1.sh and log in the virtual machine.
 
 ```bash
 host$ ./evaluate-C1.sh
@@ -342,13 +344,15 @@ host$ ./evaluate-C1.sh
 In the virtual machine, run commands below:
 
 ```bash
+# easy for you to view the command
+root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./EF_C1.sh
 ```
 
 #### 1.3 measure the overhead of C2
 
-First, execute evaluate-C2.sh and log in the virtual machine.
+First, close the virtual machine and execute evaluate-C2.sh and log in the virtual machine.
 
 ```bash
 host$ ./evaluate-C2.sh
@@ -357,13 +361,15 @@ host$ ./evaluate-C2.sh
 In the virtual machine, run commands below:
 
 ```bash
+# easy for you to view the command
+root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./EF_C2.sh
 ```
 
 #### 1.4 measure the overhead of C3
 
-First, execute evaluate-C3.sh and log in the virtual machine.
+First, close the virtual machine andexecute evaluate-C3.sh and log in the virtual machine.
 
 ```bash
 host$ ./evaluate-C3.sh
@@ -372,6 +378,8 @@ host$ ./evaluate-C3.sh
 In the virtual machine, run commands below:
 
 ```bash
+# easy for you to view the command
+root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./EF_C3.sh
 ```
@@ -392,7 +400,7 @@ In our paper, we state that the overhead SeaK is negligible. In this part, we wi
 
 #### 2.1 measure the overhead of SeaK
 
-First, execute evaluate-SeaK.sh and log in the virtual machine.
+First,close the virtual machine and execute evaluate-SeaK.sh and log in the virtual machine.
 
 ```bash
 host$ ./evaluate-SeaK.sh
@@ -401,6 +409,8 @@ host$ ./evaluate-SeaK.sh
 In the virtual machine, run commands below (this command will take at least 12 hours):
 
 ```bash
+# easy for you to view the command
+root@vm$ screen
 root@vm$ cd scripts
 root@vm$ ./SeaK.sh
 ```
@@ -438,3 +448,27 @@ For the pdf files of memory overhead, you may find the graphs are too small or t
 ![size](./figs/size.png)
 
 After modifying the python file, run `python3 EF_memory_overhead.py` or `python3 SeaK_memory_overhead.py` to regenerate the pdf files with proper size.
+
+
+
+## Possible problems you may encounter
+
+1. When you execute shell scripts like "evaluate.sh", you may see "Permission denied". In this case, you should execute :
+
+   ```bash
+   host$ chmod +x target_script.sh
+   ```
+
+2. You may see error returns when you execute "evaluate.sh" like:
+
+   ```bash
+   Permissions 0644 for 'bullseye.id_rsa' are too open
+   ```
+
+   In this case, you should execute:
+
+   ```bash
+   host$ chmod 0600 bullseye.id_rsa
+   ```
+
+   
