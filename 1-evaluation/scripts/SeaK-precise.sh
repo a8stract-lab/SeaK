@@ -40,7 +40,7 @@ else
 	:
 fi
 tar -xvf lmbench.tar.gz
-./bpf-evaluation/hotbpf-uaf_l2cap_chan_close &
+./bpf-evaluation/hotbpf_uaf-l2cap_chan_close &
 BPF_l2cap=$!
 cd lmbench
 make rerun
@@ -65,7 +65,7 @@ echo finished
 cd ..
 kill -SIGINT $BPF_l2cap
 
-./bpf-evaluation/hotbpf-uaf_l2cap_chan_close &
+./bpf-evaluation/hotbpf_uaf-l2cap_chan_close &
 BPF_l2cap=$!
 python3 scripts/phoronix_test.py seakl2cap
 kill -SIGINT $BPF_l2cap
