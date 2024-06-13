@@ -59,11 +59,11 @@ https://tinyurl.com/3epkrwcx
 
 all documentations, code, and scripts involve with the paper and AE process are open-sourced. 
 
-- 1-evaluation: scripts and kernel images to automatically executing the evaluation. 
+- 1-evaluation: scripts and kernel images(compressed in kernels.tar.xz) to automatically executing the evaluation. 
 - 2-source-code:
     - analyzer: LLVM Pass to extract the allocation and release sites of `struct`
     - linux-5.15.106: Modified linux kernel, increase the SeaK implementation, eBPF programs, and vulnerabilities
-    - POCs: exploitation writeup of `CVE-2021-4154`, `CVE-2022-0185`, `CVE-2022-27666`
+    - POCs: exploitation writeup of `CVE-2021-4154`
 
 
 ## Artifacts Functional
