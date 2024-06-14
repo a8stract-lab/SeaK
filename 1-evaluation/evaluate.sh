@@ -4,7 +4,7 @@
 #./create-image.sh
 
 gnome-terminal --title="terminal1: RUN VM & POC here"  -- ./run.sh 
-sleep 20
+sleep 10
 
 ## copy necessary files
 ./copy2vm.sh ../2-source-code/linux-5.15.106/samples/bpf
