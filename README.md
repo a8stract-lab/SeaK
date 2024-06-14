@@ -221,6 +221,7 @@ host$ mv hotbpf_effective_user.c linux-5.15.106/samples/bpf/
 host$ mv hotbpf_effective_kern.c linux-5.15.106/samples/bpf/
 
 # compile kernel first, configuration file is ready.
+# if `fixdep GLIBC version error reported, just rm fixdep and recompile.`
 host$ cd linux-5.15.106
 host$ make -j8 bzImage
 
