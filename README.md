@@ -220,8 +220,12 @@ host$ python3 gen_hotbpf.py -name effective -alloc __alloc_file -free file_free_
 host$ mv hotbpf_effective_user.c linux-5.15.106/samples/bpf/
 host$ mv hotbpf_effective_kern.c linux-5.15.106/samples/bpf/
 
+# compile kernel first.
+host$ cd linux-5.15.106
+host$ make -j8 bzImage
+
 # get into the BPF compilation directory
-host$ cd linux-5.15.106/samples/bpf/
+host$ cd samples/bpf/
 ```
 
 
