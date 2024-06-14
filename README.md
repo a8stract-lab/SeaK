@@ -49,7 +49,7 @@ host$ cd SeaK
 
 # download the rootfilesystem and keys for the vitual machine
 cd 1-evaluation
-# microsoft drive link
+# microsoft drive link, you should download the files one by one
 https://tinyurl.com/mwsub255
 ```
 
@@ -220,8 +220,12 @@ host$ python3 gen_hotbpf.py -name effective -alloc __alloc_file -free file_free_
 host$ mv hotbpf_effective_user.c linux-5.15.106/samples/bpf/
 host$ mv hotbpf_effective_kern.c linux-5.15.106/samples/bpf/
 
+# compile kernel first.
+host$ cd linux-5.15.106
+host$ make -j8 bzImage
+
 # get into the BPF compilation directory
-host$ cd linux-5.15.106/samples/bpf/
+host$ cd samples/bpf/
 ```
 
 
@@ -270,7 +274,7 @@ execute BPF programs to prevent the vulnerability on the left terminal `root@vm$
 execute POCs programs to exploit the `CVE-2021-4154` on the right terminal
 ```sh
 # add a normal user to execute POC, set passwd to `evaluate` too
-root@vm$ addusr evaluate
+root@vm$ adduser evaluate
 
 # copy POCs to evaluate directory
 root@vm$ cp -r POCs /home/evaluate/
