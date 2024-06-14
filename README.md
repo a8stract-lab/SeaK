@@ -270,7 +270,7 @@ execute BPF programs to prevent the vulnerability on the left terminal `root@vm$
 execute POCs programs to exploit the `CVE-2021-4154` on the right terminal
 ```sh
 # add a normal user to execute POC, set passwd to `evaluate` too
-root@vm$ addusr evaluate
+root@vm$ adduser evaluate
 
 # copy POCs to evaluate directory
 root@vm$ cp -r POCs /home/evaluate/
