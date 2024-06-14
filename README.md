@@ -49,7 +49,7 @@ host$ cd SeaK
 
 # download the rootfilesystem and keys for the vitual machine
 cd 1-evaluation
-# microsoft drive link
+# microsoft drive link, you should download the files one by one
 https://tinyurl.com/mwsub255
 ```
 
