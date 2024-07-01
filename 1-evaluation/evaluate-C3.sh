@@ -3,9 +3,10 @@
 # create image
 #./create-image.sh
 
-gnome-terminal --title="terminal1: RUN VM & POC here"  -- ./run-C3.sh 
+screen -d -m -S virtual-machine ./run-C3.sh
 sleep 20
 ./copy2vm.sh ../2-source-code/POCs
 ./copy2vm.sh ./scripts
-gnome-terminal --title="terminal2: RUN BPF & MONITOR OUTPUT here" -- ./connect2vm.sh
+
+screen -r virtual-machine
 

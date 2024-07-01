@@ -318,6 +318,8 @@ For benchmarks, we will use lmbench and phoronix-test-suite as stated in our pap
 Then execute evaluate-vanilla.sh and log in the virtual machine.
 
 ```bash
+host$ chmod +x evaluate-vanilla.sh
+host$ chmod 0600 bullseye.id_rsa
 host$ ./evaluate-vanilla.sh
 ```
 
@@ -343,6 +345,7 @@ After setup，make sure there are these directories under /root
 First, close the virtual machine and execute evaluate-C1.sh and log in the virtual machine.
 
 ```bash
+root@vm$ shutdown -h now
 host$ ./evaluate-C1.sh
 ```
 
@@ -360,6 +363,7 @@ root@vm$ ./EF_C1.sh
 First, close the virtual machine and execute evaluate-C2.sh and log in the virtual machine.
 
 ```bash
+root@vm$ shutdown -h now
 host$ ./evaluate-C2.sh
 ```
 
@@ -377,6 +381,7 @@ root@vm$ ./EF_C2.sh
 First, close the virtual machine andexecute evaluate-C3.sh and log in the virtual machine.
 
 ```bash
+root@vm$ shutdown -h now
 host$ ./evaluate-C3.sh
 ```
 
@@ -408,6 +413,7 @@ In our paper, we state that the overhead SeaK is negligible. In this part, we wi
 First,close the virtual machine and execute evaluate-SeaK.sh and log in the virtual machine.
 
 ```bash
+root@vm$ shutdown -h now
 host$ ./evaluate-SeaK.sh
 ```
 
@@ -448,7 +454,7 @@ Run commands like this:
 root@vm$ scp -r /root/Results hostname@hostip:/path/to/host/directory
 ```
 
-For the pdf files of memory overhead, you may find the graphs are too small or too big. You can modify the parameters 'length' and 'height' in EF_memory_overhead.py and SeaK_memory_overhead.py.
+For the pdf files of memory overhead, you may find the graphs are too small or too big. You can modify the parameters 'length' and 'height' in EF_memory_overhead.py and SeaK_memory_overhead.py under ~/scripts in virtual machine.
 
 ![size](./figs/size.png)
 
