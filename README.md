@@ -262,10 +262,31 @@ host$ make -j8
 
 cd into evaluate directory, boot up the virtual machine, 2 terminals pop out, insert `root` to login in the left terminal.
 
+**if the machine support GUI**
+
 ```sh
 host$ cd $PATH_TO_SEAK/SeaK/1-evaluation
 host$ ./evaluate.sh
 ```
+
+**if the machine does not support GUI, and evaluators connect to the evaluation machine through ssh**
+
+Please prepare 2 terminals and connect them to the Linux Server (Evaluation machine), after both terminals connect to the Linux Server.
+
+```sh
+# terminal 1
+host$ cd $PATH_TO_SEAK/SeaK/1-evaluation
+host$ ./run.sh && sleep 5
+
+# terminal 2
+host$ cd $PATH_TO_SEAK/SeaK/1-evaluation
+host$ ./copy2vm.sh ../2-source-code/linux-5.15.106/samples/bpf
+host$ ./copy2vm.sh ../2-source-code/POCs
+host$ ./copy2vm.sh ./scripts
+host$ ./connect2vm.sh
+```
+
+ **the rest parts are the same.**
 
 ![boot](./figs/evaluate.png)
 
