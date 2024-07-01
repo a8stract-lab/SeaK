@@ -275,4 +275,4 @@ make rerun &
 python3 ../scripts/memory_overhead.py ../SeaK_memory_overhead/64AAs.txt 1001
 echo finished
 cd ..
-kill SIGINT $BPF_38_tests
+kill -SIGINT $BPF_38_tests
