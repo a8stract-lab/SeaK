@@ -318,6 +318,7 @@ For benchmarks, we will use lmbench and phoronix-test-suite as stated in our pap
 Then execute evaluate-vanilla.sh and log in the virtual machine.
 
 ```bash
+host$ sudo apt-get install screen
 host$ chmod +x evaluate-vanilla.sh
 host$ chmod 0600 bullseye.id_rsa
 host$ ./evaluate-vanilla.sh
@@ -440,7 +441,7 @@ By executing this command, SeaK_lmbench.xlsx, SeaK_phoronix.xlsx and SeaK_memory
 
 ### 3.How to view the results
 
-The virtual machine does not support pdf and xlsx. So you can use ssh to transit the results to the host machine.
+The virtual machine does not support pdf and xlsx. So you can use ssh to transit the results to the host machine or any machine which can view pdf and xlsx files.
 
 First, get the hostip of your machine:
 
